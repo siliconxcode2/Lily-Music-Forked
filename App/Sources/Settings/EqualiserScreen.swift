@@ -4,7 +4,6 @@ import YTMCore
 
 struct EqualiserScreen: View {
     @Environment(AppModel.self) private var app
-    @Environment(\.theme) private var theme
 
     static func summary(_ settings: Settings) -> String {
         settings.equaliserEnabled ? preset(matching: settings.equaliserGains) ?? "Custom" : "Off"
@@ -17,39 +16,40 @@ struct EqualiserScreen: View {
     var body: some View {
         @Bindable var settings = app.settings
         let gains = settings.value.equaliserGains
-        // Scrolling only where ten bands outgrow the screen, as on iPhone Duo's inner display held landscape.
-        ScrollView {
-            VStack(alignment: .leading, spacing: 18) {
-                SettingRow(label: "Preset", detail: "A starting point; the bands below fine-tune it.") {
-                    HStack(spacing: 12) {
-                        Menu {
-                            ForEach(EqualiserBands.presets.indices, id: \.self) { index in
-                                Button(EqualiserBands.presets[index].name) { choose(index) }
-                            }
-                        } label: {
-                            PillLabel(title: Self.preset(matching: gains) ?? "Custom", small: true)
-                        }
-                        Toggle("Equaliser", isOn: $settings.value.equaliserEnabled)
-                            .labelsHidden()
+        Form {
+            Section {
+                Toggle("Equaliser", isOn: $settings.value.equaliserEnabled)
+                Picker("Preset", selection: presetBinding) {
+                    if Self.preset(matching: gains) == nil {
+                        Text("Custom").tag(-1)
+                    }
+                    ForEach(EqualiserBands.presets.indices, id: \.self) { index in
+                        Text(EqualiserBands.presets[index].name).tag(index)
                     }
                 }
-                // Closer together than the screen's rows, so ten bands fit.
-                VStack(spacing: 8) {
-                    ForEach(EqualiserBands.frequencies.indices, id: \.self) { band in
-                        BandRow(
-                            label: Self.label(EqualiserBands.frequencies[band]),
-                            gain: gains.indices.contains(band) ? gains[band] : 0,
-                            enabled: settings.value.equaliserEnabled
-                        ) { set(band, to: $0) }
-                    }
+            } footer: {
+                Text("A preset is a starting point; the bands below fine-tune it.")
+            }
+            Section("Bands") {
+                ForEach(EqualiserBands.frequencies.indices, id: \.self) { band in
+                    BandRow(
+                        label: Self.label(EqualiserBands.frequencies[band]),
+                        gain: gains.indices.contains(band) ? gains[band] : 0,
+                        enabled: settings.value.equaliserEnabled
+                    ) { set(band, to: $0) }
                 }
             }
-            .padding(.horizontal, 20)
-            .padding(.vertical, 12)
         }
-        .scrollBounceBehavior(.basedOnSize)
-        .background(theme.menu)
         .navigationTitle("Equaliser")
+    }
+
+    /// The preset the bands match, or -1 for Custom.
+    private var presetBinding: Binding<Int> {
+        Binding {
+            EqualiserBands.presets.firstIndex { $0.gains == app.settings.value.equaliserGains } ?? -1
+        } set: { index in
+            if EqualiserBands.presets.indices.contains(index) { choose(index) }
+        }
     }
 
     /// A preset turns the equaliser on too, in one change.
@@ -61,9 +61,9 @@ struct EqualiserScreen: View {
     }
 
     /// A drag reports every move, most within the same dB, which change nothing.
-    private func set(_ band: Int, to fraction: Double) {
+    private func set(_ band: Int, to value: Float) {
         // Adding 0 turns the -0 just left of centre into 0.
-        let gain = ((Float(fraction) * 2 - 1) * EqualiserBands.maxGain).rounded() + 0
+        let gain = value.rounded() + 0
         guard app.settings.value.equaliserGains.indices.contains(band),
               app.settings.value.equaliserGains[band] != gain else { return }
         app.settings.value.equaliserGains[band] = gain
@@ -78,22 +78,21 @@ private struct BandRow: View {
     let label: String
     let gain: Float
     let enabled: Bool
-    let set: (Double) -> Void
-
-    @Environment(\.theme) private var theme
+    let set: (Float) -> Void
 
     var body: some View {
-        HStack(spacing: 16) {
+        HStack(spacing: 12) {
             Text(label)
-                .foregroundStyle(theme.textSecondary)
-                .frame(width: 64, alignment: .leading)
-            BarSlider(value: Double(gain / EqualiserBands.maxGain + 1) / 2, changed: set, committed: set)
+                .foregroundStyle(.secondary)
+                .frame(minWidth: 56, alignment: .leading)
+            Slider(value: Binding { gain } set: { set($0) }, in: -EqualiserBands.maxGain...EqualiserBands.maxGain, step: 1)
                 .disabled(!enabled)
                 .accessibilityLabel(label)
+                .accessibilityValue("\(Int(gain.rounded())) decibels")
             Text("\(gain > 0 ? "+" : "")\(Int(gain.rounded())) dB")
                 .monospacedDigit()
-                .foregroundStyle(enabled ? theme.text : theme.textDim)
-                .frame(width: 48, alignment: .trailing)
+                .foregroundStyle(enabled ? .primary : .tertiary)
+                .frame(minWidth: 48, alignment: .trailing)
         }
         .font(.footnote)
     }

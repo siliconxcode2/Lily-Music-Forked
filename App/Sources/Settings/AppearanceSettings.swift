@@ -7,20 +7,30 @@ struct AppearanceSettings: View {
     var body: some View {
         @Bindable var settings = app.settings
         let accent = settings.value.accent
-        SettingRow(label: "Theme", stacked: true) {
-            ChoicePills(choices: [(Look.dark, "Dark"), (.light, "Light"), (.black, "Black")], selection: $settings.value.look)
-        }
-        SettingRow(
-            label: "Accent colour",
-            detail: accent == .artwork ? "Follows the artwork of the song playing." : accent.name,
-            stacked: true
-        ) {
-            HStack(spacing: 6) {
-                ForEach(Accent.allCases, id: \.self) { choice in
-                    Swatch(accent: choice, active: choice == accent) { settings.value.accent = choice }
+        Form {
+            Section("Theme") {
+                Picker("Theme", selection: $settings.value.look) {
+                    Text("Black").tag(Look.black)
+                    Text("Dark").tag(Look.dark)
+                    Text("Light").tag(Look.light)
                 }
+                .pickerStyle(.inline)
+                .labelsHidden()
+            }
+            Section {
+                LazyVGrid(columns: [GridItem(.adaptive(minimum: 44), spacing: 4)], spacing: 4) {
+                    ForEach(Accent.allCases, id: \.self) { choice in
+                        Swatch(accent: choice, active: choice == accent) { settings.value.accent = choice }
+                    }
+                }
+                .padding(.vertical, 4)
+            } header: {
+                Text("Accent colour")
+            } footer: {
+                Text(accent == .artwork ? "Follows the artwork of the song playing." : accent.name)
             }
         }
+        .navigationTitle("Appearance")
     }
 }
 
@@ -31,8 +41,8 @@ private struct Swatch: View {
 
     @Environment(\.theme) private var theme
 
-    private static let size: CGFloat = 34
-    private static let fill: CGFloat = 24
+    private static let size: CGFloat = 44
+    private static let fill: CGFloat = 32
     private static let artwork = LinearGradient(
         colors: [Accent.red, .purple, .teal].compactMap(\.rgb).map { Color(rgb: RGB(hex: $0)) },
         startPoint: .topLeading,
@@ -57,6 +67,7 @@ private struct Swatch: View {
             .contentShape(Circle())
         }
         .buttonStyle(PressScale(scale: 0.9))
+        .sensoryFeedback(.selection, trigger: active)
         .animation(Theme.fast, value: active)
         .accessibilityLabel(accent.name)
         .accessibilityAddTraits(active ? .isSelected : [])

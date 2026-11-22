@@ -3,7 +3,7 @@ import YTMCore
 
 /// The app, not this row, waits while access is allowed on Last.fm's page, so
 /// leaving Settings doesn't stop it. A build without the API keys has no button.
-struct LastFMRow: View {
+struct LastFMSection: View {
     private enum Phase: Equatable {
         /// Reading the Keychain.
         case reading
@@ -17,10 +17,17 @@ struct LastFMRow: View {
     @State private var phase = LastFM.isAvailable ? Phase.reading : .unavailable
 
     var body: some View {
-        SettingRow(label: "Last.fm", detail: detail) { control }
-            // Read again as a wait starts or ends, which it may do while the
-            // row is gone.
-            .task(id: app.isConnectingLastFM) { await refresh() }
+        Section {
+            LabeledContent {
+                control
+            } label: {
+                Text("Last.fm")
+                Text(detail)
+            }
+        }
+        // Read again as a wait starts or ends, which it may do while the
+        // row is gone.
+        .task(id: app.isConnectingLastFM) { await refresh() }
     }
 
     private var detail: String {

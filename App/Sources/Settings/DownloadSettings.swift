@@ -8,37 +8,43 @@ struct DownloadSettings: View {
     var body: some View {
         @Bindable var settings = app.settings
         let downloads = app.player.downloads
-        SettingRow(
-            label: "Download quality",
-            detail: "High downloads 256 kbps Opus with YouTube Premium. Songs downloaded already keep theirs.",
-            stacked: true
-        ) {
-            ChoicePills(
-                choices: [(AudioQuality.low, "Low"), (.normal, "Normal"), (.high, "High")],
-                selection: $settings.value.downloadQuality
-            )
-        }
-        ToggleRow(
-            label: "Download over Wi-Fi only",
-            detail: "Downloads wait for Wi-Fi rather than use mobile data or a hotspot.",
-            isOn: $settings.value.downloadOnWiFiOnly
-        )
-        ToggleRow(
-            label: "Smart downloads",
-            detail: "Keeps songs you play, and more like them, downloaded, picked afresh each day.",
-            isOn: $settings.value.smartDownloads
-        )
-        if settings.value.smartDownloads {
-            SettingRow(label: "Smart downloads keep", stacked: true) {
-                ChoicePills(choices: [25, 50, 100, 200].map { ($0, "\($0) songs") }, selection: $settings.value.smartDownloadCount)
+        Form {
+            Section {
+                Picker("Download quality", selection: $settings.value.downloadQuality) {
+                    Text("Low").tag(AudioQuality.low)
+                    Text("Normal").tag(AudioQuality.normal)
+                    Text("High").tag(AudioQuality.high)
+                }
+            } footer: {
+                Text("High downloads 256 kbps Opus with YouTube Premium. Songs downloaded already keep theirs.")
+            }
+            Section {
+                Toggle(isOn: $settings.value.downloadOnWiFiOnly) {
+                    Text("Download over Wi-Fi only")
+                    Text("Downloads wait for Wi-Fi rather than use mobile data or a hotspot.")
+                }
+                Toggle(isOn: $settings.value.smartDownloads) {
+                    Text("Smart downloads")
+                    Text("Keeps songs you play, and more like them, downloaded, picked afresh each day.")
+                }
+                if settings.value.smartDownloads {
+                    Picker("Keep", selection: $settings.value.smartDownloadCount) {
+                        ForEach([25, 50, 100, 200], id: \.self) { count in
+                            Text("\(count) songs").tag(count)
+                        }
+                    }
+                }
+            }
+            Section {
+                LabeledContent("Downloaded", value: "\(Formatting.songs(downloads.songCount)), \(downloads.bytes.formatted(.byteCount(style: .file)))")
+                Button("Remove All Downloads", role: .destructive) { confirming = true }
+                    .disabled(downloads.isEmpty)
             }
         }
-        SettingRow(label: "Downloads", detail: "\(Formatting.songs(downloads.songCount)), \(downloads.bytes.formatted(.byteCount(style: .file)))") {
-            PillButton(title: "Remove all", small: true) { confirming = true }
-                .disabled(downloads.isEmpty)
-        }
+        .animation(Theme.normal, value: settings.value.smartDownloads)
+        .navigationTitle("Downloads")
         .confirmationDialog("Remove all downloads?", isPresented: $confirming, titleVisibility: .visible) {
-            Button("Remove all", role: .destructive) { downloads.removeAll() }
+            Button("Remove All", role: .destructive) { downloads.removeAll() }
         }
     }
 }

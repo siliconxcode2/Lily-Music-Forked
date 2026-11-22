@@ -6,39 +6,61 @@ struct SoundSettings: View {
 
     var body: some View {
         @Bindable var settings = app.settings
-        SettingRow(
-            label: "Normalise volume", detail: Self.normaliseDetail(settings.value.normalise), detailRoom: Self.normaliseDetail(.off),
-            stacked: true
-        ) {
-            ChoicePills(choices: [(Normalise.off, "Off"), (.quiet, "Quiet"), (.normal, "Normal")], selection: $settings.value.normalise)
-        }
-        SettingRow(label: "Equaliser", detail: EqualiserScreen.summary(settings.value)) {
-            NavigationLink(value: SettingsPage.equaliser) {
-                PillLabel(title: "Adjust", small: true)
+        Form {
+            Section {
+                Picker("Normalise volume", selection: $settings.value.normalise) {
+                    Text("Off").tag(Normalise.off)
+                    Text("Quiet").tag(Normalise.quiet)
+                    Text("Normal").tag(Normalise.normal)
+                }
+            } footer: {
+                Text(Self.normaliseDetail(settings.value.normalise))
             }
-            .buttonStyle(PressScale(scale: 0.96))
+            Section {
+                NavigationLink(value: SettingsPage.equaliser) {
+                    LabeledContent("Equaliser", value: EqualiserScreen.summary(settings.value))
+                }
+            }
+            Section {
+                Toggle(isOn: $settings.value.crossfeed) {
+                    Text("Crossfeed")
+                    Text("For headphones: blends a little of each side into the other, as speakers do.")
+                }
+                Toggle(isOn: $settings.value.mono) {
+                    Text("Mono")
+                    Text("Both sides in each ear, for listening with one earbud.")
+                }
+            }
+            Section {
+                let balance = Self.balanceDetail(settings.value.balance)
+                Slider(value: balanceBinding, in: -1...1) {
+                    Text("Balance")
+                } minimumValueLabel: {
+                    Text("L")
+                } maximumValueLabel: {
+                    Text("R")
+                }
+                .accessibilityValue(balance)
+            } header: {
+                Text("Balance")
+            } footer: {
+                Text(Self.balanceDetail(settings.value.balance))
+            }
         }
-        ToggleRow(
-            label: "Crossfeed",
-            detail: "For headphones: blends a little of each side into the other, as speakers do.",
-            isOn: $settings.value.crossfeed
-        )
-        ToggleRow(label: "Mono", detail: "Both sides in each ear, for listening with one earbud.", isOn: $settings.value.mono)
-        let balance = Self.balanceDetail(settings.value.balance)
-        SettingRow(label: "Balance", detail: balance) {
-            BarSlider(value: Double(settings.value.balance + 1) / 2, valueText: balance, changed: setBalance, committed: setBalance)
-                .frame(width: 160)
-                .accessibilityLabel("Balance")
-        }
+        .navigationTitle("Sound")
     }
 
     /// Whole percents, snapping to centre near the middle. A drag reports every move, most within the same
     /// percent, which change nothing.
-    private func setBalance(_ fraction: Double) {
-        let balance = ((Float(fraction) * 2 - 1) * 100).rounded() / 100
-        let snapped: Float = abs(balance) < 0.05 ? 0 : balance
-        guard app.settings.value.balance != snapped else { return }
-        app.settings.value.balance = snapped
+    private var balanceBinding: Binding<Float> {
+        Binding {
+            app.settings.value.balance
+        } set: { value in
+            let balance = (value * 100).rounded() / 100
+            let snapped: Float = abs(balance) < 0.05 ? 0 : balance
+            guard app.settings.value.balance != snapped else { return }
+            app.settings.value.balance = snapped
+        }
     }
 
     private static func balanceDetail(_ balance: Float) -> String {
