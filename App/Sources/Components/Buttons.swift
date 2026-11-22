@@ -51,7 +51,8 @@ struct IconButton: View {
             .contentShape(Circle())
             .glassEffect(glass ? .regular.interactive() : .identity, in: Circle())
         }
-        .buttonStyle(PressScale(scale: 0.88, animation: .easeOut(duration: 0.09)))
+        // Glass answers a touch itself, so it isn't shrunk as well.
+        .buttonStyle(PressScale(scale: glass ? 1 : 0.88, animation: .easeOut(duration: 0.09)))
         .accessibilityAddTraits(active ? .isSelected : [])
     }
 
@@ -78,7 +79,8 @@ struct PlayButton: View {
                 .contentShape(Circle())
                 .glassEffect(.regular.tint(colour ?? theme.accent).interactive(), in: Circle())
         }
-        .buttonStyle(PressScale(scale: 0.95))
+        // Glass answers a touch itself.
+        .buttonStyle(.plain)
         .accessibilityLabel(playing ? "Pause" : "Play")
     }
 }
@@ -159,7 +161,8 @@ struct Pill: View {
                 .padding(.vertical, 6)
                 .contentShape(Rectangle())
         }
-        .buttonStyle(PressScale(scale: 0.96))
+        // Glass answers a touch itself.
+        .buttonStyle(.plain)
         .accessibilityAddTraits(active ? .isSelected : [])
         .animation(Theme.fast, value: active)
     }

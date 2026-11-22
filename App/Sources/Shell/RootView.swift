@@ -101,8 +101,12 @@ private struct SheetContent: View {
                     .navigationTransition(.zoom(sourceID: MiniPlayerAccessory.zoomSource(tab: app.tab), in: transition))
             case .settings:
                 SettingsScreen()
+                    .presentationDetents([.large])
+                    .presentationDragIndicator(.visible)
             case .signIn:
+                // Full height, as Google's sign-in page needs the room.
                 SignInScreen { Task { await app.accountChanged() } }
+                    .presentationDetents([.large])
             case .addToPlaylist(let track):
                 PlaylistPickerSheet(track: track)
             }

@@ -117,6 +117,13 @@ private struct SearchChoices: View {
                 }
                 .listRowBackground(theme.panel)
                 .listRowSeparator(.hidden)
+                .swipeActions(edge: .trailing) {
+                    if recent {
+                        Button(role: .destructive) { app.history.removeSearch(choice) } label: {
+                            Label("Remove", systemImage: "trash")
+                        }
+                    }
+                }
             }
         }
         .listStyle(.plain)
@@ -130,12 +137,11 @@ private struct SearchPrompt: View {
     @Environment(\.theme) private var theme
 
     var body: some View {
-        VStack(spacing: 16) {
-            IconView(icon: .search, size: 48, colour: theme.textDim)
-            Text("What do you want to play?")
-                .font(.title3.weight(.semibold))
-                .foregroundStyle(theme.textSecondary)
-        }
+        ContentUnavailableView(
+            "What do you want to play?",
+            systemImage: "magnifyingglass",
+            description: Text("Search for songs, albums, artists and playlists.")
+        )
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .background(theme.panel)
     }

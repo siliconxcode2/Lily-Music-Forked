@@ -27,22 +27,14 @@ private struct BringYourLibrary: View {
     @Environment(\.theme) private var theme
 
     var body: some View {
-        ScrollView {
-            VStack(alignment: .leading, spacing: 10) {
-                Text("Bring your library")
-                    .font(.callout.weight(.bold))
-                    .foregroundStyle(theme.text)
-                Text("Sign in to see your playlists, albums and listening history here.")
-                    .font(.footnote)
-                    .foregroundStyle(theme.textSecondary)
-                PillButton(title: "Sign in", primary: true, small: true) { app.sheet = .signIn }
-                    .padding(.top, 6)
-            }
-            .padding(20)
-            .frame(maxWidth: .infinity, alignment: .leading)
-            .background(RoundedRectangle(cornerRadius: Theme.panelRadius).fill(theme.elevated))
-            .padding(Metrics.pagePadding)
+        ContentUnavailableView {
+            Label("Bring Your Library", systemImage: "music.note.square.stack")
+        } description: {
+            Text("Sign in to see your playlists, albums and listening history here.")
+        } actions: {
+            PillButton(title: "Sign In", primary: true) { app.sheet = .signIn }
         }
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
         .background(alignment: .top) {
             PageTint(colour: Theme.routeTint(.library), top: 0)
                 .ignoresSafeArea(edges: .top)

@@ -9,7 +9,7 @@ struct DownloadsScreen: View {
         if let page = app.player.downloads.page {
             PageContent(page: page, route: .downloads)
         } else {
-            PageStatus(phase: .empty("Songs, albums and playlists you download show up here."), tint: Theme.routeTint(.downloads))
+            PageStatus(phase: .empty(title: "No Downloads", symbol: "arrow.down.circle", message: "Songs, albums and playlists you download show up here."), tint: Theme.routeTint(.downloads))
                 .navigationTitle("Downloads")
         }
     }

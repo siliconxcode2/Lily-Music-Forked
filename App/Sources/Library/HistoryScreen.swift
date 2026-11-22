@@ -19,7 +19,7 @@ private struct LocalHistoryScreen: View {
         if let page = app.history.page {
             PageContent(page: page, route: .history)
         } else {
-            PageStatus(phase: .empty("Songs you play will show up here."), tint: Theme.routeTint(.history))
+            PageStatus(phase: .empty(title: "No History Yet", symbol: "clock.arrow.circlepath", message: "Songs you play will show up here."), tint: Theme.routeTint(.history))
         }
     }
 }

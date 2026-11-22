@@ -33,20 +33,20 @@ struct PlaylistPickerSheet: View {
                 }
         }
         .presentationDetents([.medium, .large])
+        .presentationDragIndicator(.visible)
         .task { await load() }
     }
 
     @ViewBuilder
     private var content: some View {
         if !app.isSignedIn {
-            VStack(spacing: 20) {
+            ContentUnavailableView {
+                Label("Save to Your Playlists", systemImage: "text.badge.plus")
+            } description: {
                 Text("Sign in to save songs to your playlists.")
-                    .font(.subheadline)
-                    .foregroundStyle(theme.textSecondary)
-                    .multilineTextAlignment(.center)
-                PillButton(title: "Sign in", primary: true) { app.sheet = .signIn }
+            } actions: {
+                PillButton(title: "Sign In", primary: true) { app.sheet = .signIn }
             }
-            .padding(24)
         } else if let playlists {
             ScrollView {
                 LazyVStack(alignment: .leading, spacing: 0) {

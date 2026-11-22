@@ -110,9 +110,19 @@ struct UpNextPanel: View {
         .listRowInsets(EdgeInsets(top: 0, leading: NowPlayingScreen.padding - 8, bottom: 0, trailing: NowPlayingScreen.padding - 8))
         .listRowBackground(selection.contains(entry.id) ? theme.hover : Color.clear)
         .listRowSeparator(.hidden)
+        .swipeActions(edge: .leading) {
+            if !current {
+                Button { app.player.playNext(queueOffsets: offsets([entry.id])) } label: {
+                    Label("Play Next", systemImage: "text.line.first.and.arrowtriangle.forward")
+                }
+                .tint(theme.accent)
+            }
+        }
         .swipeActions(edge: .trailing) {
             if !current {
-                Button("Remove", role: .destructive) { app.player.removeFromQueue(atOffsets: offsets([entry.id])) }
+                Button(role: .destructive) { app.player.removeFromQueue(atOffsets: offsets([entry.id])) } label: {
+                    Label("Remove", systemImage: "trash")
+                }
             }
         }
         .contextMenu {

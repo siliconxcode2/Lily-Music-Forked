@@ -7,11 +7,10 @@ struct Bone: View {
     var height: CGFloat?
     var radius: CGFloat = 4
 
-    @Environment(\.theme) private var theme
-
     var body: some View {
+        // iOS's own fill for placeholders, so the bones match the system's in every look.
         RoundedRectangle(cornerRadius: radius)
-            .fill(theme.ink.opacity(0.1))
+            .fill(.quaternary)
             .frame(width: width, height: height)
     }
 

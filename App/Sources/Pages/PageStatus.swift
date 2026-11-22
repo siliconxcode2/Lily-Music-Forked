@@ -1,11 +1,13 @@
 import SwiftUI
 import YTMCore
 
+/// Loading, failing and empty pages. The last two are iOS's own empty state,
+/// with a symbol, a title and what to do next.
 struct PageStatus: View {
     enum Phase {
         case loading(Route)
         case failed(message: String, retry: () -> Void)
-        case empty(String)
+        case empty(title: String, symbol: String, message: String)
     }
 
     let phase: Phase
@@ -22,18 +24,19 @@ struct PageStatus: View {
             case .loading(let route):
                 PageSkeleton(route: route)
             case .failed(let message, let retry):
-                VStack(spacing: 20) {
-                    Message(text: message)
-                    PillButton(title: "Try again", primary: true, action: retry)
+                ContentUnavailableView {
+                    Label(offline ? "You're offline" : "Couldn't load this", systemImage: offline ? "wifi.slash" : "exclamationmark.triangle")
+                } description: {
+                    Text(message)
+                } actions: {
+                    PillButton(title: "Try Again", primary: true, action: retry)
                     // Offline, as in YouTube Music, it points to the downloads.
-                    if app.player.downloads.online == false, !app.player.downloads.isEmpty {
-                        PillButton(title: "Go to downloads") { app.open(.downloads) }
+                    if offline, !app.player.downloads.isEmpty {
+                        PillButton(title: "Go to Downloads") { app.open(.downloads) }
                     }
                 }
-                .padding(48)
-            case .empty(let message):
-                Message(text: message)
-                    .padding(48)
+            case .empty(let title, let symbol, let message):
+                ContentUnavailableView(title, systemImage: symbol, description: Text(message))
             }
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
@@ -44,16 +47,7 @@ struct PageStatus: View {
         .background(theme.panel)
     }
 
-    private struct Message: View {
-        let text: String
-
-        @Environment(\.theme) private var theme
-
-        var body: some View {
-            Text(text)
-                .font(.title3.weight(.semibold))
-                .foregroundStyle(theme.text)
-                .multilineTextAlignment(.center)
-        }
+    private var offline: Bool {
+        app.player.downloads.online == false
     }
 }
