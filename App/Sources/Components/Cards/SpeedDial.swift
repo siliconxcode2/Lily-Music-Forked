@@ -126,6 +126,7 @@ private struct SpeedDialTile: View {
             .contentShape(Rectangle())
         }
         .buttonStyle(PressScale(scale: 0.97))
+        .zoomSource(card.route)
         // The subtitle the tile has no room for says what it is, as a card's does.
         .accessibilityLabel(card.subtitle.isEmpty ? card.title : "\(card.title), \(card.subtitle)")
         .contextMenu { CardMenu(card: card) }

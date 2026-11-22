@@ -48,6 +48,7 @@ struct GenreTile: View {
             .contentShape(RoundedRectangle(cornerRadius: 8))
         }
         .buttonStyle(PressScale(scale: 0.97))
+        .zoomSource(card.route)
     }
 
     @ViewBuilder private var background: some View {

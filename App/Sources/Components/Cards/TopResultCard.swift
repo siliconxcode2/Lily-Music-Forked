@@ -33,6 +33,7 @@ struct TopResultCard: View {
             .contentShape(RoundedRectangle(cornerRadius: 8))
         }
         .buttonStyle(PressScale(scale: 0.98))
+        .zoomSource(card.route)
         .overlay(alignment: .bottomTrailing) {
             PlayButton(size: 52) { app.play(card) }
                 .padding(20)

@@ -50,7 +50,7 @@ private struct PageBody: View {
                     .transition(.opacity)
             }
         }
-        .animation(.easeOut(duration: 0.3), value: model.page != nil)
+        .animation(Theme.normal, value: model.page != nil)
         .task(id: Visit(account: app.accountGeneration, foreground: scenePhase != .background)) {
             guard scenePhase != .background else {
                 backgrounded = true

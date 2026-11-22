@@ -24,7 +24,7 @@ struct PageTint: View {
             .padding(.top, -top)
             // On under iPhone Duo's column of tabs, so the page's colour reaches the screen's edge.
             .ignoresSafeArea(edges: .horizontal)
-            .animation(.easeOut(duration: 0.5), value: colour)
+            .animation(Theme.colour, value: colour)
             .accessibilityHidden(true)
     }
 }

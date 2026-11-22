@@ -311,7 +311,7 @@ private struct NowPlayingBackground: View {
                 theme.panel
             }
         }
-        .animation(.easeInOut(duration: 0.5), value: app.artwork)
+        .animation(Theme.colour, value: app.artwork)
         .ignoresSafeArea()
     }
 }

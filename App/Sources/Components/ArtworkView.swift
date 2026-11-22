@@ -112,7 +112,7 @@ struct ArtworkImage: View {
         if ContinuousClock.now - start < .milliseconds(120) {
             loaded = next
         } else {
-            withAnimation(.easeOut(duration: 0.3)) { loaded = next }
+            withAnimation(Theme.normal) { loaded = next }
         }
     }
 }

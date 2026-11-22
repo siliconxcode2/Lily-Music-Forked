@@ -89,7 +89,7 @@ struct DownloadButton: View {
         } label: {
             DownloadStateIcon(state: state, size: 28, frame: 48)
         }
-        .buttonStyle(PressScale(scale: 0.88, animation: .easeOut(duration: 0.09)))
+        .buttonStyle(PressScale(scale: 0.88, animation: Theme.press))
         .accessibilityLabel(state == .none ? "Download" : "Remove download")
         .confirmationDialog("Remove this download?", isPresented: $confirming, titleVisibility: .visible) {
             Button(state == .downloaded ? "Remove download" : "Stop downloading", role: .destructive) { downloads.remove(route) }
@@ -117,7 +117,7 @@ struct TrackDownloadButton: View {
         } label: {
             DownloadStateIcon(state: state, size: 22, frame: 40)
         }
-        .buttonStyle(PressScale(scale: 0.88, animation: .easeOut(duration: 0.09)))
+        .buttonStyle(PressScale(scale: 0.88, animation: Theme.press))
         .accessibilityLabel(label(state))
     }
 

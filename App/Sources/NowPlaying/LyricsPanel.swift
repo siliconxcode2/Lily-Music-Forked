@@ -115,7 +115,7 @@ private struct LyricsLines: View {
     /// Glides the lit line to the middle, unless the user has the list.
     private func glide() {
         guard following, let current else { return }
-        withAnimation(reduceMotion ? nil : .easeOut(duration: 0.5)) { position.scrollTo(id: current, anchor: .center) }
+        withAnimation(reduceMotion ? nil : .smooth(duration: 0.5)) { position.scrollTo(id: current, anchor: .center) }
     }
 }
 

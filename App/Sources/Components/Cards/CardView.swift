@@ -47,6 +47,7 @@ struct CardView: View {
             .contentShape(Rectangle())
         }
         .buttonStyle(PressScale(scale: 0.97))
+        .zoomSource(card.route)
         .contextMenu { CardMenu(card: card) }
     }
 }

@@ -1,13 +1,22 @@
 import SwiftUI
 
 struct AccountButton: View {
+    let tab: AppTab
+
     @Environment(AppModel.self) private var app
+    @Environment(\.sheetZoom) private var sheetZoom
 
     var body: some View {
-        Button { app.sheet = .settings } label: {
+        let button = Button { app.sheet = .settings } label: {
             AccountPhoto(size: 26)
         }
         .accessibilityLabel("Settings")
+        if let sheetZoom {
+            // Settings grows out of the photo, as iOS 26's sheets grow out of the button that opens them.
+            button.matchedTransitionSource(id: SettingsZoomID(tab: tab), in: sheetZoom)
+        } else {
+            button
+        }
     }
 }
 

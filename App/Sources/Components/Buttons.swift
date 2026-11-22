@@ -58,7 +58,7 @@ struct IconButton: View {
             .glassEffect(glass ? .regular.interactive() : .identity, in: Circle())
         }
         // Glass answers a touch itself, so it isn't shrunk as well.
-        .buttonStyle(PressScale(scale: glass ? 1 : 0.88, animation: .easeOut(duration: 0.09)))
+        .buttonStyle(PressScale(scale: glass ? 1 : 0.88, animation: Theme.press))
         .sensoryFeedback(trigger: taps) { _, _ in feedback }
         .accessibilityAddTraits(active ? .isSelected : [])
     }
@@ -217,7 +217,7 @@ struct PillGroup: View {
 /// Not shrunk with Reduce Motion on, as iOS's own buttons aren't.
 struct PressScale: ButtonStyle {
     var scale: CGFloat
-    var animation = Theme.fast
+    var animation = Theme.press
 
     func makeBody(configuration: Configuration) -> some View {
         PressScaleBody(configuration: configuration, scale: scale, animation: animation)

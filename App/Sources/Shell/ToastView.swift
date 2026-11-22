@@ -27,7 +27,7 @@ struct ToastView: View {
                 .transition(reduceMotion ? .opacity : .opacity.combined(with: .offset(y: 16)))
             }
         }
-        .animation(Theme.normal, value: app.toast)
+        .animation(Theme.bouncy, value: app.toast)
         // Each toast is felt: a failure as an error, anything else as done.
         .sensoryFeedback(trigger: app.toast) { _, toast in
             guard let toast else { return nil }

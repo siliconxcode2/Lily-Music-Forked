@@ -18,8 +18,17 @@ nonisolated struct Theme: Equatable, Sendable {
     static let panelRadius: CGFloat = 8
     /// Every queue row is this tall, so a dragged row's place is arithmetic.
     static let queueRow: CGFloat = 60
-    static let fast = Animation.easeOut(duration: 0.12)
-    static let normal = Animation.easeOut(duration: 0.22)
+    // Springs, as iOS's own motion is: they carry a gesture's speed on and settle without a hard stop.
+    /// Small state changes: a toggle, a highlight, a pill.
+    static let fast = Animation.snappy(duration: 0.25)
+    /// Things that move or change size: panels, pages, titles.
+    static let normal = Animation.smooth(duration: 0.35)
+    /// A press going down and springing back.
+    static let press = Animation.spring(duration: 0.22, bounce: 0.25)
+    /// Something arriving that should feel alive: a toast, a symbol, artwork settling.
+    static let bouncy = Animation.bouncy(duration: 0.45, extraBounce: 0.05)
+    /// Colours washing from one song or page to the next.
+    static let colour = Animation.smooth(duration: 0.6)
 
     let look: Look
     /// The accent, already made readable in the look.

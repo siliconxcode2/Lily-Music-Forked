@@ -9,6 +9,8 @@ struct TabRoot<Content: View>: View {
     let content: Content
 
     @Environment(AppModel.self) private var app
+    /// What cards name themselves in, so the pages they open zoom out of them.
+    @Namespace private var cards
 
     init(tab: AppTab, transition: Namespace.ID, @ViewBuilder content: () -> Content) {
         self.tab = tab
@@ -22,15 +24,17 @@ struct TabRoot<Content: View>: View {
             content
                 .modifier(MiniPlayerRoom(tab: tab))
                 .toolbar {
-                    ToolbarItem(placement: .topBarTrailing) { AccountButton() }
+                    ToolbarItem(placement: .topBarTrailing) { AccountButton(tab: tab) }
                 }
                 .navigationDestination(for: Route.self) { route in
                     Group {
                         if route == .downloads { DownloadsScreen() } else { PageScreen(route: route) }
                     }
                     .modifier(MiniPlayerRoom(tab: tab))
+                    .zoomsIn(from: route, in: cards)
                 }
         }
+        .environment(\.cardZoom, cards)
         .overlay(alignment: .bottom) { ToastView() }
         // Keeps the toast clear of the capsule; the pages keep their own room (`MiniPlayerRoom`).
         .safeAreaInset(edge: .bottom) {
