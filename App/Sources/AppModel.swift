@@ -54,6 +54,9 @@ final class AppModel {
     }
     /// Now Playing is on screen or still zooming away, while pages fill past their edges (`PastEdges`).
     var nowPlayingShown = false
+    /// Pauses playback at a time or at the end of the song; nil when off.
+    var sleepTimer: SleepTimer?
+    @ObservationIgnored var sleepTask: Task<Void, Never>?
     /// iOS's own appearance is dark, which the System look follows.
     var systemDark = true
     /// iPhone Duo, which Settings offers fold to scrub on.

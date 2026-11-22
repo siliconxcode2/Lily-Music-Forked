@@ -9,6 +9,7 @@ nonisolated enum Icon: CaseIterable, Sendable {
     case close, queue, lyrics, radio, account, note, more, clock, history
     case thumbUp, thumbUpFilled, thumbDown, thumbDownFilled, check, add, chevron
     case download, downloaded, pin, saveToPlaylist, inLibrary
+    case autoplay, sleep
 
     var symbol: String {
         switch self {
@@ -49,6 +50,8 @@ nonisolated enum Icon: CaseIterable, Sendable {
         case .pin: "pin.fill"
         case .saveToPlaylist: "text.badge.plus"
         case .inLibrary: "text.badge.checkmark"
+        case .autoplay: "infinity"
+        case .sleep: "moon.zzz.fill"
         }
     }
 }

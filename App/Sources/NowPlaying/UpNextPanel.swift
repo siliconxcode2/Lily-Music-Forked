@@ -60,6 +60,11 @@ struct UpNextPanel: View {
                 IconButton(icon: .close, size: 28, iconSize: 16) { stopSelecting() }
                     .accessibilityLabel("Done selecting")
             } else {
+                // Apple Music's ∞: carry on with similar music when the queue ends.
+                IconButton(
+                    icon: .autoplay, size: 36, iconSize: 18, active: app.settings.value.autoplay, feedback: .selection
+                ) { app.settings.value.autoplay.toggle() }
+                .accessibilityLabel("Autoplay")
                 if app.isSignedIn {
                     PanelAction(title: "Save") { app.saveQueueAsPlaylist() }
                 }

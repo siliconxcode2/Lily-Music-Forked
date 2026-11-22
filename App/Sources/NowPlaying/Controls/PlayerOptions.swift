@@ -1,3 +1,4 @@
+import AVKit
 import SwiftUI
 import YTMCore
 
@@ -14,6 +15,7 @@ struct PlayerOptions: View {
                     QualityBadge(stream: stream)
                 }
                 Spacer()
+                AirPlayButton()
                 opener(.lyrics, icon: .lyrics, label: "Lyrics")
                 opener(.upNext, icon: .queue, label: "Up next")
             }
@@ -51,5 +53,31 @@ private struct VolumeControl: View {
     private func setVolume(_ value: Double) {
         if app.settings.value.muted { app.player.toggleMute() }
         volume.set(Float(value))
+    }
+}
+
+/// iOS's own output picker, for AirPlay, Bluetooth and the rest, as Apple Music's beside its lyrics.
+private struct AirPlayButton: View {
+    @Environment(\.theme) private var theme
+
+    var body: some View {
+        RoutePicker(tint: UIColor(theme.textSecondary), active: UIColor(theme.accent))
+            .frame(width: IconButton.minimum, height: IconButton.minimum)
+    }
+}
+
+private struct RoutePicker: UIViewRepresentable {
+    let tint: UIColor
+    let active: UIColor
+
+    func makeUIView(context: Context) -> AVRoutePickerView {
+        let picker = AVRoutePickerView()
+        picker.prioritizesVideoDevices = false
+        return picker
+    }
+
+    func updateUIView(_ picker: AVRoutePickerView, context: Context) {
+        picker.tintColor = tint
+        picker.activeTintColor = active
     }
 }

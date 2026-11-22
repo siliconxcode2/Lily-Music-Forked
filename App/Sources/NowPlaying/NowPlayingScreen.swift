@@ -27,6 +27,8 @@ struct NowPlayingScreen: View {
     @State private var page: Page? = .artwork
     @State private var tab = PanelTab.upNext
     @State private var shape = Shape()
+    /// On the phone held upright, lyrics take the artwork's place above the controls, as Apple Music's do.
+    @State private var inlineLyrics = false
 
     var body: some View {
         @Bindable var app = app
@@ -51,12 +53,13 @@ struct NowPlayingScreen: View {
         // Each layout starts at the artwork; stood, a tab left on lyrics would open them.
         .onChange(of: layout) {
             page = .artwork
+            inlineLyrics = false
             if $1 == .stand { tab = .upNext }
         }
         .background { NowPlayingBackground() }
         // On the panel, or stood lyrics, a pull down goes back to the artwork
         // rather than closing the screen.
-        .interactiveDismissDisabled((page == .panel && layout != .sideBySide) || (layout == .stand && lyricsShown))
+        .interactiveDismissDisabled((page == .panel && layout != .sideBySide) || (layout == .stand && lyricsShown) || inlineLyrics)
         .sheet(item: $app.nowPlayingPicker) { PlaylistPickerSheet(track: $0) }
         .onAppear { app.nowPlayingShown = true }
         .onDisappear {
@@ -75,7 +78,7 @@ struct NowPlayingScreen: View {
     }
 
     private var lyricsShown: Bool {
-        tab == .lyrics && (layout != .pager || page == .panel)
+        inlineLyrics || tab == .lyrics && (layout != .pager || page == .panel)
     }
 
     private func pager(_ track: Track) -> some View {
@@ -83,7 +86,7 @@ struct NowPlayingScreen: View {
             VStack(spacing: 0) {
                 // Each page hidden from VoiceOver while off screen,
                 // so it reads one set of controls.
-                artworkPage(track, open: show)
+                artworkPage(track, open: pagerOpen)
                     .containerRelativeFrame(.vertical)
                     .accessibilityHidden(page != .artwork)
                     .id(Page.artwork)
@@ -153,12 +156,30 @@ struct NowPlayingScreen: View {
 
     private func artworkPage(_ track: Track, open: @escaping (PanelTab) -> Void) -> some View {
         VStack(spacing: 0) {
-            LargeArtwork(url: track.thumbnail)
-                .modifier(SwipeToSkip())
-                .accessibilityAction(named: "Up next") { open(.upNext) }
-                .padding(.vertical, 12)
-                .padding(.horizontal, Self.padding)
+            ZStack {
+                if inlineLyrics {
+                    LyricsPanel { pagerOpen(.lyrics) }
+                        .transition(.opacity.combined(with: .scale(scale: 0.96)))
+                } else {
+                    LargeArtwork(url: track.thumbnail)
+                        .modifier(SwipeToSkip())
+                        .accessibilityAction(named: "Up Next") { open(.upNext) }
+                        .padding(.vertical, 12)
+                        .padding(.horizontal, Self.padding)
+                        .transition(.opacity.combined(with: .scale(scale: 0.9)))
+                }
+            }
+            .frame(maxHeight: .infinity)
             controls(track, open: open)
+        }
+    }
+
+    /// Lyrics swap in for the artwork and back; the queue is the page below.
+    private func pagerOpen(_ next: PanelTab) {
+        if next == .lyrics {
+            withAnimation(Theme.normal) { inlineLyrics.toggle() }
+        } else {
+            show(next)
         }
     }
 
@@ -255,10 +276,12 @@ private struct NowPlayingTopBar: View {
             IconButton(icon: .close, size: 44, iconSize: 20, colour: theme.text, glass: true) { dismiss() }
                 .accessibilityLabel("Close")
             Spacer()
+            SleepTimerBadge()
             Menu {
                 if app.isSignedIn {
                     Button("Save to Playlist", systemImage: "text.badge.plus") { app.addToPlaylist(track) }
                 }
+                SleepTimerMenu()
                 TrackDownloadItem(track: track)
                 TrackLinks(track: track)
             } label: {
@@ -275,15 +298,19 @@ private struct NowPlayingTopBar: View {
 }
 
 /// Decoded at the player's shared size, which is fetched ahead with the song.
+/// It steps back while paused and springs forward on play, as Apple Music's does.
 private struct LargeArtwork: View {
     let url: String?
 
+    @Environment(AppModel.self) private var app
     @Environment(\.theme) private var theme
 
     var body: some View {
         GeometryReader { space in
             let edge = min(space.size.width, space.size.height)
             ArtworkView(url: url, size: edge, radius: 8, pixelEdge: ImagePipeline.playerEdge, shadow: (theme.shadowSoft, 16, 8))
+                .scaleEffect(app.player.isPlaying ? 1 : 0.82)
+                .animation(Theme.bouncy, value: app.player.isPlaying)
                 .frame(width: space.size.width, height: space.size.height)
         }
     }
@@ -336,6 +363,54 @@ private struct NowPlayingBackground: View {
             let t = Float(time.truncatingRemainder(dividingBy: 3_600))
             let phase = Float(cell) * 1.7
             return point + SIMD2(sin(t * 0.21 + phase), cos(t * 0.17 + phase)) * drift
+        }
+    }
+}
+
+/// Apple Music's lengths, the end of the song, and Turn Off while one runs.
+private struct SleepTimerMenu: View {
+    @Environment(AppModel.self) private var app
+
+    var body: some View {
+        Menu("Sleep Timer", systemImage: "moon.zzz") {
+            if app.sleepTimer != nil {
+                Button("Turn Off", systemImage: "xmark") { app.setSleepTimer(nil) }
+            }
+            Button("End of Song") { app.setSleepTimer(.endOfSong) }
+            ForEach(AppModel.sleepLengths, id: \.self) { minutes in
+                Button(minutes == 60 ? "1 Hour" : "\(minutes) Minutes") {
+                    app.setSleepTimer(.at(.now + Double(minutes * 60)))
+                }
+            }
+        }
+    }
+}
+
+/// The time left, counting down, beside the menu while a sleep timer runs.
+private struct SleepTimerBadge: View {
+    @Environment(AppModel.self) private var app
+    @Environment(\.theme) private var theme
+
+    var body: some View {
+        if let timer = app.sleepTimer {
+            HStack(spacing: 4) {
+                IconView(icon: .sleep, size: 14, colour: theme.text)
+                switch timer {
+                case .at(let end):
+                    Text(timerInterval: Date.now...max(end, .now), countsDown: true)
+                        .monospacedDigit()
+                case .endOfSong:
+                    Text("End of Song")
+                }
+            }
+            .font(.footnote.weight(.semibold))
+            .foregroundStyle(theme.text)
+            .padding(.horizontal, 12)
+            .frame(minHeight: 32)
+            .glassEffect(.regular, in: Capsule())
+            .transition(.scale.combined(with: .opacity))
+            .accessibilityElement(children: .combine)
+            .accessibilityLabel("Sleep timer")
         }
     }
 }
