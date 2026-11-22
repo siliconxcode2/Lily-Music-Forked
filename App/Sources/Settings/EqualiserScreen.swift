@@ -91,6 +91,8 @@ private struct BandRow: View {
                 .accessibilityValue("\(Int(gain.rounded())) decibels")
             Text("\(gain > 0 ? "+" : "")\(Int(gain.rounded())) dB")
                 .monospacedDigit()
+                .contentTransition(.numericText(value: Double(gain)))
+                .animation(Theme.fast, value: gain)
                 .foregroundStyle(enabled ? .primary : .tertiary)
                 .frame(minWidth: 48, alignment: .trailing)
         }

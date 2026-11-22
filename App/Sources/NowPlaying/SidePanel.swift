@@ -37,10 +37,15 @@ struct SidePanel: View {
         HStack(spacing: 8) {
             // Against the outer edge, under the right thumb.
             if isBeside { Spacer() }
-            PillGroup(
-                titles: ["Up next", "Lyrics"],
-                selection: Binding { tab.rawValue } set: { PanelTab(rawValue: $0).map(select) }
-            )
+            // iOS's own segmented control: glass, with a thumb that slides between the two.
+            Picker("Panel", selection: Binding { tab } set: { select($0) }) {
+                Text("Up Next").tag(PanelTab.upNext)
+                Text("Lyrics").tag(PanelTab.lyrics)
+            }
+            .pickerStyle(.segmented)
+            .labelsHidden()
+            .fixedSize()
+            .sensoryFeedback(.selection, trigger: tab)
             if let close {
                 Spacer()
                 IconButton(icon: .close, action: close)

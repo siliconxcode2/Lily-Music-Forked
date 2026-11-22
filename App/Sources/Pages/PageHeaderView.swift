@@ -89,23 +89,30 @@ struct PageHeaderView: View {
         model != nil && header.subscribed != nil && header.channelId != nil
     }
 
+    /// On glass, in one container, so neighbouring buttons blend and each menu grows out of its button.
     private func actions(spacing: CGFloat) -> some View {
+        GlassEffectContainer(spacing: spacing) {
+            actionButtons(spacing: spacing)
+        }
+    }
+
+    private func actionButtons(spacing: CGFloat) -> some View {
         HStack(spacing: spacing) {
             if canPlay {
                 PlayButton(size: 56) { perform(.play) }
             }
             if canShuffle {
-                IconButton(icon: .shuffle, size: 48, iconSize: 30) { perform(.shuffle) }
+                IconButton(icon: .shuffle, size: 48, iconSize: 22, colour: theme.text, glass: true, feedback: .impact(weight: .light)) { perform(.shuffle) }
                     .accessibilityLabel("Shuffle")
             }
             if canRadio {
-                IconButton(icon: .radio, size: 48, iconSize: 28) { perform(.radio) }
+                IconButton(icon: .radio, size: 48, iconSize: 22, colour: theme.text, glass: true, feedback: .impact(weight: .light)) { perform(.radio) }
                     .accessibilityLabel("Start radio")
             }
             download
             if canSave, let model {
                 let saved = header.saved == true
-                IconButton(icon: saved ? .inLibrary : .saveToPlaylist, size: 48, iconSize: 28, active: saved) {
+                IconButton(icon: saved ? .inLibrary : .saveToPlaylist, size: 48, iconSize: 22, active: saved, colour: theme.text, glass: true, feedback: .impact(weight: .medium)) {
                     app.toggleInLibrary(subscribe: false, in: model)
                 }
                 .accessibilityLabel(saved ? "Remove from library" : "Save to library")
@@ -130,9 +137,10 @@ struct PageHeaderView: View {
                         Button("Delete playlist", role: .destructive) { edit(.delete) }
                     }
                 } label: {
-                    IconView(icon: .more, size: 28, colour: theme.textSecondary)
+                    IconView(icon: .more, size: 22, colour: theme.text)
                         .frame(width: 48, height: 48)
                         .contentShape(Circle())
+                        .glassEffect(.regular.interactive(), in: Circle())
                 }
                 .accessibilityLabel("More")
             }

@@ -11,7 +11,9 @@ struct IconView: View {
         Image(icon: icon)
             .font(.system(size: size * 0.8))
             .foregroundStyle(colour)
+            // One symbol turns into the next, as play into pause, rather than swapping.
             .contentTransition(.symbolEffect(.replace))
+            .animation(Theme.fast, value: icon)
             .frame(width: size, height: size)
     }
 }
@@ -46,6 +48,8 @@ struct IconButton: View {
         } label: {
             ZStack {
                 IconView(icon: icon, size: iconSize * min(textScale, 1.5), colour: iconColour)
+                    // A tap is answered by the symbol itself.
+                    .symbolEffect(.bounce, value: taps)
                 if active {
                     Circle()
                         .fill(theme.accent)
@@ -86,6 +90,7 @@ struct PlayButton: View {
             action()
         } label: {
             IconView(icon: playing ? .pause : .play, size: size * 0.48, colour: iconColour ?? theme.onColour)
+                .symbolEffect(.bounce, value: taps)
                 .frame(width: size, height: size)
                 .contentShape(Circle())
                 .glassEffect(.regular.tint(colour ?? theme.accent).interactive(), in: Circle())
@@ -149,68 +154,6 @@ struct PillLabel: View {
             .glassEffect(primary ? .regular.tint(theme.accent).interactive() : .regular.interactive(), in: Capsule())
             .contentShape(Capsule())
             .opacity(isEnabled ? 1 : 0.4)
-    }
-}
-
-struct Pill: View {
-    let title: String
-    let active: Bool
-    var compact = false
-    let action: () -> Void
-
-    @Environment(\.theme) private var theme
-
-    var body: some View {
-        Button(action: action) {
-            Text(title)
-                .font((compact ? Font.footnote : .subheadline).weight(.semibold))
-                .foregroundStyle(active ? theme.textInverse : theme.text)
-                .lineLimit(1)
-                .padding(.horizontal, compact ? 10 : 14)
-                .frame(minHeight: 32)
-                .glassEffect(active ? .regular.tint(theme.text).interactive() : .regular.interactive(), in: Capsule())
-                // Taller to touch than to see, so the row stays slim.
-                .padding(.vertical, 6)
-                .contentShape(Rectangle())
-        }
-        // Glass answers a touch itself.
-        .buttonStyle(.plain)
-        .accessibilityAddTraits(active ? .isSelected : [])
-        .animation(Theme.fast, value: active)
-    }
-}
-
-struct PillGroup: View {
-    let titles: [String]
-    @Binding var selection: Int
-
-    /// Tighter pills only when the row won't fit, and scrolling only when even those won't, so no title is cut
-    /// short.
-    var body: some View {
-        ViewThatFits(in: .horizontal) {
-            pills(compact: false)
-            pills(compact: true)
-            // Unclipped, so the row runs on to the screen's edge, and kept on the pill chosen.
-            ScrollViewReader { scroller in
-                ScrollView(.horizontal, showsIndicators: false) {
-                    pills(compact: true)
-                }
-                .scrollClipDisabled()
-                .onAppear { scroller.scrollTo(selection) }
-                .onChange(of: selection) { withAnimation(Theme.fast) { scroller.scrollTo(selection) } }
-            }
-        }
-    }
-
-    /// In one glass container, so the pills blend as glass beside glass does.
-    private func pills(compact: Bool) -> some View {
-        GlassEffectContainer(spacing: compact ? 4 : 6) {
-            HStack(spacing: compact ? 4 : 6) {
-                ForEach(titles.indices, id: \.self) { index in
-                    Pill(title: titles[index], active: selection == index, compact: compact) { selection = index }
-                }
-            }
-        }
     }
 }
 

@@ -47,6 +47,9 @@ struct UpNextPanel: View {
                 .font(.subheadline.weight(.bold))
                 .foregroundStyle(theme.text)
                 .lineLimit(1)
+                // The count rolls as songs come and go.
+                .contentTransition(.numericText())
+                .animation(Theme.fast, value: count)
             Spacer()
             if editing {
                 Group {

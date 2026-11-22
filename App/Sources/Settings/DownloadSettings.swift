@@ -36,7 +36,11 @@ struct DownloadSettings: View {
                 }
             }
             Section {
-                LabeledContent("Downloaded", value: "\(Formatting.songs(downloads.songCount)), \(downloads.bytes.formatted(.byteCount(style: .file)))")
+                LabeledContent("Downloaded") {
+                    Text("\(Formatting.songs(downloads.songCount)), \(downloads.bytes.formatted(.byteCount(style: .file)))")
+                        .contentTransition(.numericText())
+                        .animation(Theme.fast, value: downloads.bytes)
+                }
                 Button("Remove All Downloads", role: .destructive) { confirming = true }
                     .disabled(downloads.isEmpty)
             }
