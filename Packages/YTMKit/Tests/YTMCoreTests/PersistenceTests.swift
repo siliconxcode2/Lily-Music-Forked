@@ -73,9 +73,9 @@ import Testing
         #expect(try JSONDecoder().decode(Settings.self, from: JSONEncoder().encode(settings)) == settings)
     }
 
-    @Test func defaultsToLilysOrchidOnBlack() {
+    @Test func defaultsToLilysOrchidMatchingTheSystem() {
         let settings = Settings()
-        #expect(settings.accent == .lily && settings.look == .black)
+        #expect(settings.accent == .lily && settings.look == .system)
         #expect(Accent.allCases.first == .lily, "offered first")
         #expect(Accent.lily.rgb == 0xd65db1)
     }

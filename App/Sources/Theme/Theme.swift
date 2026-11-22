@@ -73,14 +73,24 @@ nonisolated struct Theme: Equatable, Sendable {
         homeTint = accent.mixed(with: .black, weight: 0.36)
     }
 
-    /// `artworkAccent` is the playing artwork's vivid colour, for the accent that follows it.
-    init(settings: Settings, artworkAccent: RGB?) {
+    /// `artworkAccent` is the playing artwork's vivid colour, for the accent that follows it. The System look
+    /// is Black or Light as `systemDark` says.
+    init(settings: Settings, artworkAccent: RGB?, systemDark: Bool) {
+        let follows = settings.look == .system
+        let look = follows ? (systemDark ? Look.black : .light) : settings.look
         let accent = settings.accent.rgb.map(RGB.init(hex:)) ?? artworkAccent ?? Self.lily
-        self.init(look: settings.look, accent: ArtworkPalette.readable(accent, look: settings.look))
+        self.init(look: look, accent: ArtworkPalette.readable(accent, look: look))
+        followsSystem = follows
     }
 
+    /// Set by the System look, which leaves iOS to choose light or dark.
+    private(set) var followsSystem = false
+
     var isLight: Bool { look == .light }
-    var colorScheme: ColorScheme { isLight ? .light : .dark }
+    /// Nil when following iOS, so its own appearance shows through.
+    var colorScheme: ColorScheme? {
+        followsSystem ? nil : isLight ? .light : .dark
+    }
 
     /// A colour picked for behind white text, such as an artwork's, paled in
     /// the light look so dark text reads on it.

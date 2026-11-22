@@ -39,6 +39,7 @@ private struct LyricsLines: View {
 
     @Environment(AppModel.self) private var app
     @Environment(\.theme) private var theme
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
     @State private var current: Int?
     @State private var position = ScrollPosition(idType: Int.self)
     @State private var phase = ScrollPhase.idle
@@ -114,7 +115,7 @@ private struct LyricsLines: View {
     /// Glides the lit line to the middle, unless the user has the list.
     private func glide() {
         guard following, let current else { return }
-        withAnimation(.easeOut(duration: 0.5)) { position.scrollTo(id: current, anchor: .center) }
+        withAnimation(reduceMotion ? nil : .easeOut(duration: 0.5)) { position.scrollTo(id: current, anchor: .center) }
     }
 }
 

@@ -17,6 +17,8 @@ public enum Normalise: String, Codable, CaseIterable, Sendable {
 }
 
 public enum Look: String, Codable, CaseIterable, Sendable {
+    /// Black or Light, as iOS's own appearance is set.
+    case system
     case dark, light, black
 }
 
@@ -85,7 +87,7 @@ public struct Settings: Codable, Equatable, Sendable {
     /// Report songs played to the signed-in account's YouTube history.
     public var youtubeHistory = true
     public var ratingButtons = true
-    public var look: Look = .black
+    public var look: Look = .system
     public var accent: Accent = .lily
     /// The account has been served Premium formats, so songs without them (music videos) never mark it as not Premium.
     public var premiumAccount = false

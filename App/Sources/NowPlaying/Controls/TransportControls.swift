@@ -11,21 +11,21 @@ struct TransportControls: View {
         HStack {
             IconButton(
                 icon: settings.shuffle == .smart ? .sparkle : .shuffle, size: 48, iconSize: 22,
-                active: settings.shuffle != .off
+                active: settings.shuffle != .off, feedback: .selection
             ) { player.cycleShuffle() }
             .accessibilityLabel(shuffleLabel(settings.shuffle))
             Spacer()
-            IconButton(icon: .previous, size: 56, iconSize: 34, colour: theme.text) { player.previous() }
+            IconButton(icon: .previous, size: 56, iconSize: 34, colour: theme.text, feedback: .impact(weight: .light)) { player.previous() }
                 .accessibilityLabel("Previous")
             Spacer()
             PlayPauseButton(size: 68)
             Spacer()
-            IconButton(icon: .next, size: 56, iconSize: 34, colour: theme.text) { player.next() }
+            IconButton(icon: .next, size: 56, iconSize: 34, colour: theme.text, feedback: .impact(weight: .light)) { player.next() }
                 .accessibilityLabel("Next")
             Spacer()
             IconButton(
                 icon: settings.repeatMode == .one ? .repeatOne : .repeat, size: 48, iconSize: 22,
-                active: settings.repeatMode != .off
+                active: settings.repeatMode != .off, feedback: .selection
             ) { player.cycleRepeat() }
             .accessibilityLabel(repeatLabel(settings.repeatMode))
         }

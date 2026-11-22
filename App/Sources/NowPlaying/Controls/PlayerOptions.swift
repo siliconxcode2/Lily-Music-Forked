@@ -34,7 +34,7 @@ private struct VolumeControl: View {
         let player = app.player
         let muted = app.settings.value.muted
         HStack(spacing: 8) {
-            IconButton(icon: icon(muted: muted), size: 36, iconSize: 20) { player.toggleMute() }
+            IconButton(icon: icon(muted: muted), size: 36, iconSize: 20, feedback: .selection) { player.toggleMute() }
                 .accessibilityLabel(muted ? "Unmute" : "Mute")
             BarSlider(value: muted ? 0 : Double(volume.level), changed: setVolume, committed: setVolume)
                 .accessibilityLabel("Volume")

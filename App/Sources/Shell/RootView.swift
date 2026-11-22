@@ -3,6 +3,8 @@ import YTMCore
 
 struct RootView: View {
     @Environment(AppModel.self) private var app
+    /// iOS's own appearance while the System look leaves it be; otherwise the look's.
+    @Environment(\.colorScheme) private var colorScheme
     @Namespace private var transition
 
     var body: some View {
@@ -45,6 +47,7 @@ struct RootView: View {
         }
         .environment(\.theme, app.theme)
         .preferredColorScheme(app.theme.colorScheme)
+        .onChange(of: colorScheme, initial: true) { app.systemDark = $1 == .dark }
         .tint(app.theme.accent)
         .task { await app.followTheme() }
         .task { await app.followPinned() }

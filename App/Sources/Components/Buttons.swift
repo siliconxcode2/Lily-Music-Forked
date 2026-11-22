@@ -28,16 +28,22 @@ struct IconButton: View {
     var colour: Color?
     /// On a clear glass circle, for buttons that float over content rather than sit in a bar.
     var glass = false
+    /// Felt with each tap, for the controls whose effect is heard rather than seen.
+    var feedback: SensoryFeedback?
     let action: () -> Void
 
     @Environment(\.theme) private var theme
     @Environment(\.isEnabled) private var isEnabled
+    @State private var taps = 0
     /// The symbol grows with the reader's text size, as far as half again.
     @ScaledMetric(relativeTo: .body) private var textScale: CGFloat = 1
 
     var body: some View {
         let edge = max(size, Self.minimum)
-        Button(action: action) {
+        Button {
+            taps += 1
+            action()
+        } label: {
             ZStack {
                 IconView(icon: icon, size: iconSize * min(textScale, 1.5), colour: iconColour)
                 if active {
@@ -53,6 +59,7 @@ struct IconButton: View {
         }
         // Glass answers a touch itself, so it isn't shrunk as well.
         .buttonStyle(PressScale(scale: glass ? 1 : 0.88, animation: .easeOut(duration: 0.09)))
+        .sensoryFeedback(trigger: taps) { _, _ in feedback }
         .accessibilityAddTraits(active ? .isSelected : [])
     }
 
@@ -71,9 +78,13 @@ struct PlayButton: View {
     let action: () -> Void
 
     @Environment(\.theme) private var theme
+    @State private var taps = 0
 
     var body: some View {
-        Button(action: action) {
+        Button {
+            taps += 1
+            action()
+        } label: {
             IconView(icon: playing ? .pause : .play, size: size * 0.48, colour: iconColour ?? theme.onColour)
                 .frame(width: size, height: size)
                 .contentShape(Circle())
@@ -81,6 +92,7 @@ struct PlayButton: View {
         }
         // Glass answers a touch itself.
         .buttonStyle(.plain)
+        .sensoryFeedback(.impact(weight: .medium), trigger: taps)
         .accessibilityLabel(playing ? "Pause" : "Play")
     }
 }
@@ -202,14 +214,27 @@ struct PillGroup: View {
     }
 }
 
+/// Not shrunk with Reduce Motion on, as iOS's own buttons aren't.
 struct PressScale: ButtonStyle {
     var scale: CGFloat
     var animation = Theme.fast
 
     func makeBody(configuration: Configuration) -> some View {
-        configuration.label
-            .scaleEffect(configuration.isPressed ? scale : 1)
-            .animation(animation, value: configuration.isPressed)
+        PressScaleBody(configuration: configuration, scale: scale, animation: animation)
+    }
+
+    private struct PressScaleBody: View {
+        let configuration: Configuration
+        let scale: CGFloat
+        let animation: Animation
+
+        @Environment(\.accessibilityReduceMotion) private var reduceMotion
+
+        var body: some View {
+            configuration.label
+                .scaleEffect(configuration.isPressed && !reduceMotion ? scale : 1)
+                .animation(animation, value: configuration.isPressed)
+        }
     }
 }
 

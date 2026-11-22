@@ -22,6 +22,8 @@ struct PageHeaderView: View {
 
     @Environment(AppModel.self) private var app
     @Environment(\.theme) private var theme
+    /// The banner's secondary text goes solid, as iOS's translucent text does.
+    @Environment(\.accessibilityReduceTransparency) private var reduceTransparency
 
     /// The page samples its tint at this size too, so the decode is shared.
     static func artEdge(_ header: PageHeader, topInset: CGFloat) -> CGFloat {
@@ -45,7 +47,7 @@ struct PageHeaderView: View {
                     }
                     .backgroundExtensionEffect(isEnabled: extendsBanner)
                     // A banner is darkened behind its text, which stays white in every look.
-                    HeaderText(header: header, foreground: theme.onColour, secondary: theme.onColour.opacity(0.7))
+                    HeaderText(header: header, foreground: theme.onColour, secondary: reduceTransparency ? theme.onColour : theme.onColour.opacity(0.7))
                         .padding(.horizontal, Metrics.pagePadding)
                         .padding(.bottom, 24)
                 }

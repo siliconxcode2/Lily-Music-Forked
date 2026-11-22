@@ -106,7 +106,7 @@ struct MiniPlayer: View {
                 .frame(maxWidth: .infinity, alignment: .leading)
                 MiniPlayPause()
                 if !compact {
-                    IconButton(icon: .next, iconSize: 22, colour: theme.text) { app.player.next() }
+                    IconButton(icon: .next, iconSize: 22, colour: theme.text, feedback: .impact(weight: .light)) { app.player.next() }
                         .accessibilityLabel("Next")
                 }
             }
@@ -134,7 +134,9 @@ private struct MiniPlayPause: View {
         if player.isBuffering {
             Spinner(size: 24).frame(width: IconButton.minimum, height: IconButton.minimum)
         } else {
-            IconButton(icon: player.isPlaying ? .pause : .play, iconSize: 24, colour: theme.text) { player.togglePlayPause() }
+            IconButton(icon: player.isPlaying ? .pause : .play, iconSize: 24, colour: theme.text, feedback: .impact(weight: .medium)) {
+                player.togglePlayPause()
+            }
                 .accessibilityLabel(player.isPlaying ? "Pause" : "Play")
         }
     }

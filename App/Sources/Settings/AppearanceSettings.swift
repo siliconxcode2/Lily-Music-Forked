@@ -10,6 +10,7 @@ struct AppearanceSettings: View {
         Form {
             Section("Theme") {
                 Picker("Theme", selection: $settings.value.look) {
+                    Text("Match System").tag(Look.system)
                     Text("Black").tag(Look.black)
                     Text("Dark").tag(Look.dark)
                     Text("Light").tag(Look.light)

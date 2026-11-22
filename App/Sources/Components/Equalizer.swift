@@ -6,13 +6,15 @@ struct Equalizer: View {
     var colour: Color?
 
     @Environment(\.theme) private var theme
+    /// Bars stood still at varied heights, still saying what's playing.
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
 
     private static let frame: TimeInterval = 0.125
     private static let size = CGSize(width: 16, height: 14)
 
     var body: some View {
-        TimelineView(.animation(minimumInterval: Self.frame, paused: !active)) { timeline in
-            let phase = (timeline.date.timeIntervalSinceReferenceDate / Self.frame).rounded(.down)
+        TimelineView(.animation(minimumInterval: Self.frame, paused: !active || reduceMotion)) { timeline in
+            let phase = reduceMotion ? 1 : (timeline.date.timeIntervalSinceReferenceDate / Self.frame).rounded(.down)
             Canvas { context, size in
                 for bar in 0..<3 {
                     let height = active

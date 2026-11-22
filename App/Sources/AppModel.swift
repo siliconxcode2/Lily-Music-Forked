@@ -54,6 +54,8 @@ final class AppModel {
     }
     /// Now Playing is on screen or still zooming away, while pages fill past their edges (`PastEdges`).
     var nowPlayingShown = false
+    /// iOS's own appearance is dark, which the System look follows.
+    var systemDark = true
     /// iPhone Duo, which Settings offers fold to scrub on.
     var hasHinge = false
     /// The playlist picker opened from Now Playing, shown over it so its open panel stays.
@@ -109,7 +111,7 @@ final class AppModel {
         self.history = history
         audio = AudioPlayer { Proxy.configurations }
         player = PlayerController(api: api, settings: settings, history: history, audio: audio)
-        theme = Theme(settings: settings.value, artworkAccent: nil)
+        theme = Theme(settings: settings.value, artworkAccent: nil, systemDark: true)
         // Detached, as the main actor builds the first frame before any task of its own runs.
         homeAhead = Task.detached(priority: .userInitiated) { [api] in try await api.page(.home) }
         // Read here, for the app's life: a view's task would be cancelled by a scene teardown,
@@ -179,7 +181,7 @@ final class AppModel {
     /// Replaces `theme` only when it changes, so views reading it redraw only then.
     func followTheme() async {
         let changes = Observations { [settings] in
-            Theme(settings: settings.value, artworkAccent: self.artwork?.vivid)
+            Theme(settings: settings.value, artworkAccent: self.artwork?.vivid, systemDark: self.systemDark)
         }
         for await theme in changes where theme != self.theme {
             self.theme = theme
