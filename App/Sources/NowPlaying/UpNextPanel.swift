@@ -129,12 +129,13 @@ struct UpNextPanel: View {
             }
         }
         .contextMenu {
-            Button("Play next") { app.player.playNext(queueOffsets: offsets([entry.id])) }
+            Button("Play Next", systemImage: "text.line.first.and.arrowtriangle.forward") { app.player.playNext(queueOffsets: offsets([entry.id])) }
                 .disabled(current)
-            Button("Remove from queue") { app.player.removeFromQueue(atOffsets: offsets([entry.id])) }
+            Button("Remove from Queue", systemImage: "minus.circle") { app.player.removeFromQueue(atOffsets: offsets([entry.id])) }
                 .disabled(current)
             TrackDownloadItem(track: entry.item)
-            Button("Copy link") { app.copyLink(entry.item.link) }
+            ShareItem(link: entry.item.link)
+            Button("Copy Link", systemImage: "link") { app.copyLink(entry.item.link) }
             TrackLibraryMenu(track: entry.item)
         }
     }

@@ -8,7 +8,7 @@ struct SoundSettings: View {
         @Bindable var settings = app.settings
         Form {
             Section {
-                Picker("Normalise volume", selection: $settings.value.normalise) {
+                Picker("Normalise Volume", selection: $settings.value.normalise) {
                     Text("Off").tag(Normalise.off)
                     Text("Quiet").tag(Normalise.quiet)
                     Text("Normal").tag(Normalise.normal)

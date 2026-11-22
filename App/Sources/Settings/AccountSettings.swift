@@ -28,11 +28,11 @@ struct AccountSettings: View {
             if app.isSignedIn {
                 Section {
                     Toggle(isOn: $settings.value.youtubeHistory) {
-                        Text("YouTube history")
+                        Text("YouTube History")
                         Text("Adds songs played here to your YouTube Music history, so your recommendations and Listen again reflect them.")
                     }
                     Toggle(isOn: $settings.value.ratingButtons) {
-                        Text("Like and dislike buttons")
+                        Text("Like and Dislike Buttons")
                         Text("Shows them beside the song playing. Liking adds a song to your Liked music; disliking steers your recommendations away from it.")
                     }
                 }

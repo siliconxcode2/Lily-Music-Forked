@@ -257,7 +257,7 @@ private struct NowPlayingTopBar: View {
             Spacer()
             Menu {
                 if app.isSignedIn {
-                    Button("Save to playlist") { app.addToPlaylist(track) }
+                    Button("Save to Playlist", systemImage: "text.badge.plus") { app.addToPlaylist(track) }
                 }
                 TrackDownloadItem(track: track)
                 TrackLinks(track: track)

@@ -12,7 +12,7 @@ struct ProxySection: View {
 
     var body: some View {
         Section {
-            TextField("Proxy address", text: $text, prompt: Text(saved?.address ?? "http://host:port"))
+            TextField("Proxy Address", text: $text, prompt: Text(saved?.address ?? "http://host:port"))
                 .keyboardType(.URL)
                 .textInputAutocapitalization(.never)
                 .autocorrectionDisabled()

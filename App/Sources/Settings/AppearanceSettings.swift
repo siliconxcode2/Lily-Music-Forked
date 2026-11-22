@@ -26,7 +26,7 @@ struct AppearanceSettings: View {
                 }
                 .padding(.vertical, 4)
             } header: {
-                Text("Accent colour")
+                Text("Accent Colour")
             } footer: {
                 Text(accent == .artwork ? "Follows the artwork of the song playing." : accent.name)
             }

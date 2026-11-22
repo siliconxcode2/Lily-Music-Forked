@@ -129,16 +129,17 @@ struct PageHeaderView: View {
             }
             if let link {
                 Menu {
-                    Button("Copy link") { app.copyLink(link) }
+                    ShareItem(link: link)
+                    Button("Copy Link", systemImage: "link") { app.copyLink(link) }
                     if let edit {
-                        Button("Rename") { edit(.rename) }
+                        Button("Rename", systemImage: "pencil") { edit(.rename) }
                         Divider()
-                        Picker("Who can see it", selection: privacy) {
+                        Picker("Who Can See It", selection: privacy) {
                             ForEach(PlaylistPrivacy.allCases, id: \.self) { Text($0.title).tag($0) }
                         }
                         .pickerStyle(.inline)
                         Divider()
-                        Button("Delete playlist", role: .destructive) { edit(.delete) }
+                        Button("Delete Playlist", systemImage: "trash", role: .destructive) { edit(.delete) }
                     }
                 } label: {
                     IconView(icon: .more, size: 22, colour: theme.text)

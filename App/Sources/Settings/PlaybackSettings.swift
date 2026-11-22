@@ -9,7 +9,7 @@ struct PlaybackSettings: View {
         @Bindable var settings = app.settings
         Form {
             Section {
-                Picker("Audio quality", selection: $settings.value.quality) {
+                Picker("Audio Quality", selection: $settings.value.quality) {
                     Text("Low").tag(AudioQuality.low)
                     Text("Normal").tag(AudioQuality.normal)
                     Text("High").tag(AudioQuality.high)
@@ -40,7 +40,7 @@ struct PlaybackSettings: View {
             }
             Section {
                 Toggle(isOn: $settings.value.pauseOnUnplug) {
-                    Text("Pause when unplugged")
+                    Text("Pause When Unplugged")
                     Text("Pauses when headphones or the device playing are unplugged, rather than carrying on through another.")
                 }
                 Toggle(isOn: $settings.value.autoplay) {
@@ -49,7 +49,7 @@ struct PlaybackSettings: View {
                 }
                 if app.hasHinge {
                     Toggle(isOn: $settings.value.foldToScrub) {
-                        Text("Fold to scrub")
+                        Text("Fold to Scrub")
                         Text("With Now Playing open and the phone half open like a book, rest it a moment, then fold it to skip back or open it to skip ahead, 10 seconds a step.")
                     }
                 }
@@ -75,7 +75,7 @@ private struct StorageSection: View {
 
     var body: some View {
         Section {
-            LabeledContent("Audio cache", value: size.map { $0.formatted(.byteCount(style: .file)) } ?? "…")
+            LabeledContent("Audio Cache", value: size.map { $0.formatted(.byteCount(style: .file)) } ?? "…")
             Button("Clear Audio Cache", role: .destructive) {
                 Task {
                     await app.audio.clearCache()

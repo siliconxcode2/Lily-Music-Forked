@@ -48,7 +48,43 @@ struct CardView: View {
         }
         .buttonStyle(PressScale(scale: 0.97))
         .zoomSource(card.route)
-        .contextMenu { CardMenu(card: card) }
+        // A long press lifts a larger look at it above the menu, as Apple Music's does.
+        .contextMenu {
+            CardMenu(card: card)
+        } preview: {
+            CardPreview(card: card)
+                // A preview is drawn apart from the page, so it is handed the theme itself.
+                .environment(\.theme, theme)
+        }
+    }
+}
+
+/// The card's artwork large, with its title under it.
+private struct CardPreview: View {
+    private static let edge: CGFloat = 260
+
+    let card: Card
+
+    @Environment(\.theme) private var theme
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 10) {
+            ArtworkView(url: card.thumbnail, size: Self.edge, round: card.kind == .artist, radius: 10)
+            VStack(alignment: .leading, spacing: 2) {
+                Text(card.title)
+                    .font(.headline)
+                    .foregroundStyle(theme.text)
+                if !card.subtitle.isEmpty {
+                    Text(card.subtitle)
+                        .font(.subheadline)
+                        .foregroundStyle(theme.textSecondary)
+                }
+            }
+            .lineLimit(2)
+        }
+        .frame(width: Self.edge)
+        .padding(16)
+        .background(theme.elevated)
     }
 }
 

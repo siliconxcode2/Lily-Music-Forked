@@ -34,13 +34,13 @@ struct PlaylistDialogs: ViewModifier {
 
     func body(content: Content) -> some View {
         content
-            .alert("Rename playlist", isPresented: shown(.rename)) {
+            .alert("Rename Playlist", isPresented: shown(.rename)) {
                 TextField("Name", text: $name)
                     .onSubmit(rename)
                 Button("Cancel", role: .cancel) {}
                 Button("Save", action: rename)
             }
-            .alert("Delete playlist", isPresented: shown(.delete)) {
+            .alert("Delete Playlist", isPresented: shown(.delete)) {
                 Button("Cancel", role: .cancel) {}
                 Button("Delete", role: .destructive) {
                     if let model { app.deletePlaylist(in: model) }

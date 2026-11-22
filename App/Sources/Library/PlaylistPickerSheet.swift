@@ -17,7 +17,7 @@ struct PlaylistPickerSheet: View {
         NavigationStack {
             content
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
-                .navigationTitle("Save to playlist")
+                .navigationTitle("Save to Playlist")
                 .navigationBarTitleDisplayMode(.inline)
                 .toolbar {
                     ToolbarItem(placement: .cancellationAction) {
@@ -25,7 +25,7 @@ struct PlaylistPickerSheet: View {
                             .tint(theme.text)
                     }
                 }
-                .alert("New playlist", isPresented: $naming) {
+                .alert("New Playlist", isPresented: $naming) {
                     TextField("Title", text: $title)
                     Button("Cancel", role: .cancel) {}
                     Button("Create", action: create)
@@ -50,7 +50,7 @@ struct PlaylistPickerSheet: View {
         } else if let playlists {
             ScrollView {
                 LazyVStack(alignment: .leading, spacing: 0) {
-                    row("New playlist", new: true) { naming = true }
+                    row("New Playlist…", new: true) { naming = true }
                     ForEach(playlists) { playlist in
                         row(playlist.title, ticked: playlist.contains) { add(to: playlist) }
                     }

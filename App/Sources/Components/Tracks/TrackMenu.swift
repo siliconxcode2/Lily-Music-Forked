@@ -1,22 +1,27 @@
 import SwiftUI
 import YTMCore
 
+/// Laid out as iOS's own menus are: a symbol beside each item, and sections
+/// for playing, the library and going elsewhere.
 struct TrackMenu: View {
     let track: Track
 
     @Environment(AppModel.self) private var app
 
     var body: some View {
-        // The player says what it queued.
-        Button("Play next") { app.player.playNext([track]) }
-        Button("Add to queue") { app.player.addToQueue([track]) }
-        Button("Start radio") { app.player.startRadio(from: track) }
-        TrackDownloadItem(track: track)
-
-        TrackLibraryMenu(track: track)
-
-        Divider()
-        TrackLinks(track: track)
+        Section {
+            // The player says what it queued.
+            Button("Play Next", systemImage: "text.line.first.and.arrowtriangle.forward") { app.player.playNext([track]) }
+            Button("Add to Queue", systemImage: "text.line.last.and.arrowtriangle.forward") { app.player.addToQueue([track]) }
+            Button("Start Radio", systemImage: "dot.radiowaves.left.and.right") { app.player.startRadio(from: track) }
+        }
+        Section {
+            TrackDownloadItem(track: track)
+            TrackLibraryMenu(track: track)
+        }
+        Section {
+            TrackLinks(track: track)
+        }
     }
 }
 
@@ -26,11 +31,25 @@ struct TrackLinks: View {
     @Environment(AppModel.self) private var app
 
     var body: some View {
-        Button("Go to artist") { app.openArtist(of: track) }
+        Button("Go to Artist", systemImage: "music.mic") { app.openArtist(of: track) }
             .disabled(track.firstArtistId == nil)
-        Button("Go to album") { app.openAlbum(of: track) }
+        Button("Go to Album", systemImage: "square.stack") { app.openAlbum(of: track) }
             .disabled(track.album == nil)
-        Button("Copy link") { app.copyLink(track.link) }
+        ShareItem(link: track.link)
+        Button("Copy Link", systemImage: "link") { app.copyLink(track.link) }
+    }
+}
+
+/// iOS's share sheet, for Messages, AirDrop and the rest.
+struct ShareItem: View {
+    let link: String
+
+    var body: some View {
+        if let url = URL(string: link) {
+            ShareLink(item: url) {
+                Label("Share", systemImage: "square.and.arrow.up")
+            }
+        }
     }
 }
 
@@ -42,17 +61,22 @@ struct TrackLibraryMenu: View {
 
     var body: some View {
         if app.isSignedIn {
-            Divider()
             let rating = app.rating(of: track)
-            Button(rating == .like ? "Remove from liked songs" : "Like") { app.rate(track, .like) }
-            Button(rating == .dislike ? "Remove dislike" : "Dislike") { app.rate(track, .dislike) }
+            Button(rating == .like ? "Remove from Liked Songs" : "Like", systemImage: rating == .like ? "hand.thumbsup.fill" : "hand.thumbsup") {
+                app.rate(track, .like)
+            }
+            Button(rating == .dislike ? "Remove Dislike" : "Dislike", systemImage: rating == .dislike ? "hand.thumbsdown.fill" : "hand.thumbsdown") {
+                app.rate(track, .dislike)
+            }
             // Unknown for any but the playing song, so offered to clear.
             if !app.isPlaying(track) {
-                Button("Remove rating") { app.rate(track, .none) }
+                Button("Remove Rating", systemImage: "hand.raised.slash") { app.rate(track, .none) }
             }
-            Button("Save to playlist") { app.addToPlaylist(track) }
+            Button("Save to Playlist", systemImage: "text.badge.plus") { app.addToPlaylist(track) }
             if let ownPlaylist {
-                Button("Remove from playlist") { app.removeFromPlaylist(track, in: ownPlaylist) }
+                Button("Remove from Playlist", systemImage: "minus.circle", role: .destructive) {
+                    app.removeFromPlaylist(track, in: ownPlaylist)
+                }
             }
         }
     }
@@ -66,15 +90,23 @@ struct CardMenu: View {
 
     var body: some View {
         if card.kind != .genre {
-            Button("Play") { app.play(card) }
-            Button("Start radio") { app.startRadio(from: card) }
+            Section {
+                Button("Play", systemImage: "play") { app.play(card) }
+                Button("Start Radio", systemImage: "dot.radiowaves.left.and.right") { app.startRadio(from: card) }
+            }
         }
-        if pinsPlaylists, card.kind == .playlist, app.isSignedIn {
-            Button(app.pinned.contains(card.id) ? "Unpin" : "Pin to top") { app.togglePin(card) }
+        Section {
+            if pinsPlaylists, card.kind == .playlist, app.isSignedIn {
+                let pinned = app.pinned.contains(card.id)
+                Button(pinned ? "Unpin" : "Pin to Top", systemImage: pinned ? "pin.slash" : "pin") { app.togglePin(card) }
+            }
+            CardDownloadItem(card: card)
         }
-        CardDownloadItem(card: card)
         if let link = card.link {
-            Button("Copy link") { app.copyLink(link) }
+            Section {
+                ShareItem(link: link)
+                Button("Copy Link", systemImage: "link") { app.copyLink(link) }
+            }
         }
     }
 }

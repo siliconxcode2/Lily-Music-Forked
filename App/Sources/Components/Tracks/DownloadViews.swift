@@ -139,9 +139,9 @@ struct TrackDownloadItem: View {
     var body: some View {
         let downloads = app.player.downloads
         if downloads.state(of: track.id) == .none {
-            Button("Download") { downloads.download(track) }
+            Button("Download", systemImage: "arrow.down.circle") { downloads.download(track) }
         } else if downloads.canRemove(track.id) {
-            Button("Remove download", role: .destructive) { downloads.remove(track) }
+            Button("Remove Download", systemImage: "trash", role: .destructive) { downloads.remove(track) }
         }
     }
 }
@@ -157,9 +157,9 @@ struct CardDownloadItem: View {
         } else if let route = card.route, Downloads.isDownloadable(route) {
             let downloads = app.player.downloads
             if downloads.state(of: route) == .none {
-                Button("Download") { Task { await downloads.download(card) } }
+                Button("Download", systemImage: "arrow.down.circle") { Task { await downloads.download(card) } }
             } else {
-                Button("Remove download", role: .destructive) { downloads.remove(route) }
+                Button("Remove Download", systemImage: "trash", role: .destructive) { downloads.remove(route) }
             }
         }
     }

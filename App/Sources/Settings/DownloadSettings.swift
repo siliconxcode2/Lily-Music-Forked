@@ -10,7 +10,7 @@ struct DownloadSettings: View {
         let downloads = app.player.downloads
         Form {
             Section {
-                Picker("Download quality", selection: $settings.value.downloadQuality) {
+                Picker("Download Quality", selection: $settings.value.downloadQuality) {
                     Text("Low").tag(AudioQuality.low)
                     Text("Normal").tag(AudioQuality.normal)
                     Text("High").tag(AudioQuality.high)
@@ -20,11 +20,11 @@ struct DownloadSettings: View {
             }
             Section {
                 Toggle(isOn: $settings.value.downloadOnWiFiOnly) {
-                    Text("Download over Wi-Fi only")
+                    Text("Download over Wi-Fi Only")
                     Text("Downloads wait for Wi-Fi rather than use mobile data or a hotspot.")
                 }
                 Toggle(isOn: $settings.value.smartDownloads) {
-                    Text("Smart downloads")
+                    Text("Smart Downloads")
                     Text("Keeps songs you play, and more like them, downloaded, picked afresh each day.")
                 }
                 if settings.value.smartDownloads {
