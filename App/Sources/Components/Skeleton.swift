@@ -134,9 +134,6 @@ struct PageSkeleton: View {
                     HeaderBones(art: false, label: false)
                     SectionBones(layouts: [.carousel, .carousel])
                 case .home:
-                    Bone(width: 220, height: 28)
-                        .padding(.horizontal, Metrics.pagePadding)
-                        .frame(height: Metrics.greetingHeight, alignment: .bottom)
                     if app.isSignedIn {
                         SectionBones(layouts: YTMusic.homeShelves.map(\.layout))
                     } else {

@@ -12,6 +12,8 @@ struct SearchScreen: View {
     @State private var typed = false
     @State private var suggestions: [String] = []
     @State private var shown: String?
+    /// Which kind of result shows, as Apple Music's search filters.
+    @State private var scope = SearchScope.all
 
     var body: some View {
         @Bindable var app = app
@@ -21,6 +23,7 @@ struct SearchScreen: View {
             if let shown {
                 PageScreen(route: .search(shown))
                     .id(shown)
+                    .environment(\.sectionScope, scope.title)
                     // Covered by the choices while searching, so VoiceOver skips it.
                     .accessibilityHidden(app.isSearching)
             } else {
@@ -37,6 +40,21 @@ struct SearchScreen: View {
         // Always showing, so the query stays in view over its results.
         .searchable(text: $query, isPresented: $app.isSearching, placement: .navigationBarDrawer(displayMode: .always), prompt: "What do you want to play?")
         .onSubmit(of: .search) { search(query) }
+        .toolbar {
+            if shown != nil, !app.isSearching {
+                ToolbarItem(placement: .topBarTrailing) {
+                    Menu {
+                        Picker("Show", selection: $scope.animation(Theme.normal)) {
+                            ForEach(SearchScope.allCases, id: \.self) { scope in
+                                Text(scope.title ?? "All Results").tag(scope)
+                            }
+                        }
+                    } label: {
+                        Label("Filter", systemImage: scope == .all ? "line.3.horizontal.decrease.circle" : "line.3.horizontal.decrease.circle.fill")
+                    }
+                }
+            }
+        }
         .onChange(of: app.isSearching) { _, active in
             // Each focus starts with the recent searches, even over the last query.
             typed = false
@@ -82,6 +100,7 @@ struct SearchScreen: View {
         query = trimmed
         app.history.recordSearch(trimmed)
         app.navigation(for: .search).routes.removeAll()
+        scope = .all
         shown = trimmed
     }
 }
@@ -144,5 +163,22 @@ private struct SearchPrompt: View {
         )
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .background(theme.panel)
+    }
+}
+
+/// The kinds of result search can narrow to, titled as their sections are.
+private enum SearchScope: CaseIterable {
+    case all, songs, videos, artists, albums, playlists
+
+    /// The section kept; nil keeps them all.
+    var title: String? {
+        switch self {
+        case .all: nil
+        case .songs: "Songs"
+        case .videos: "Videos"
+        case .artists: "Artists"
+        case .albums: "Albums"
+        case .playlists: "Playlists"
+        }
     }
 }

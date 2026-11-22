@@ -19,6 +19,10 @@ struct PageContent: View {
     @State private var isWide = false
     @State private var dialog: PlaylistDialog?
     @State private var newName = ""
+    /// Search's filter: only the section of this title, or all when nil.
+    @Environment(\.sectionScope) private var sectionScope
+    /// The order of Library's lists, kept between launches.
+    @AppStorage("librarySort") private var librarySort = LibrarySort.recent
 
     /// So a page opened again starts in its colour. Keyed by URL alone: the
     /// size isn't known until the header is measured, and doesn't change it.
@@ -60,9 +64,22 @@ struct PageContent: View {
         // The scroll view is a new one, at the top, either side of the change.
         .onChange(of: splitHeader == nil) { titleShown = false }
         .background { theme.panel.modifier(PastEdges()).ignoresSafeArea() }
-        .navigationTitle(page.header?.title ?? "")
-        .toolbarTitleDisplayMode(.inline)
+        // A tab's first page has its large title from the tab (`TabRoot`); the rest show theirs inline.
+        .modifier(PageTitle(title: route.isTabRoot ? nil : page.header?.title ?? ""))
         .toolbar {
+            if route.isLibraryList {
+                ToolbarItem(placement: .topBarTrailing) {
+                    Menu {
+                        Picker("Sort By", selection: $librarySort.animation(Theme.normal)) {
+                            ForEach(LibrarySort.allCases, id: \.self) { order in
+                                Label(order.title, systemImage: order.symbol).tag(order)
+                            }
+                        }
+                    } label: {
+                        Label("Sort", systemImage: "arrow.up.arrow.down")
+                    }
+                }
+            }
             if let header = page.header {
                 ToolbarItem(placement: .principal) {
                     StickyTitle(title: header.title, canPlay: canPlay) { app.perform(.play, on: page) }
@@ -131,15 +148,16 @@ struct PageContent: View {
         let isSplit = splitHeader != nil
         return ScrollView {
             LazyVStack(alignment: .leading, spacing: 0) {
-                if route == .home {
-                    Greeting()
+                if route == .library {
+                    LibraryLinks()
                 }
                 if !isSplit, let header = page.header {
                     headerView(header)
                 }
                 let ownPlaylist = app.ownPlaylist(model) == nil ? nil : model
-                ForEach(page.sections.indices, id: \.self) { index in
-                    SectionRows(section: page.sections[index], width: frame.width - 2 * Metrics.pagePadding)
+                let sections = shownSections
+                ForEach(sections.indices, id: \.self) { index in
+                    SectionRows(section: sections[index], width: frame.width - 2 * Metrics.pagePadding)
                         // Its own songs are the first section's; any after are YouTube's suggestions.
                         .environment(\.ownPlaylist, index == 0 ? ownPlaylist : nil)
                         .modifier(ArriveInTurn(index: index))
@@ -173,7 +191,7 @@ struct PageContent: View {
         .onChange(of: model?.replacements) { position.scrollTo(edge: .top) }
         // The tint runs unbroken under the bar, whose edge shows only with
         // the sticky title.
-        .scrollEdgeEffectHidden(!stickyTitleShown, for: .top)
+        .scrollEdgeEffectHidden(!stickyTitleShown && !route.isTabRoot, for: .top)
         // Beside the header, the tracks' half alone.
         .onGeometryChange(for: Frame.self) { proxy in
             Frame(
@@ -186,6 +204,18 @@ struct PageContent: View {
         } action: { _, shown in
             titleShown = shown
         }
+    }
+
+    /// The page's sections, narrowed by Search's filter and put in Library's chosen order.
+    private var shownSections: [YTMCore.Section] {
+        var sections = page.sections
+        if let sectionScope {
+            sections = sections.filter { $0.title == sectionScope }
+        }
+        if route.isLibraryList, librarySort != .recent {
+            sections = sections.map { $0.sorted(librarySort) }
+        }
+        return sections
     }
 
     private var canPlay: Bool {
@@ -218,28 +248,6 @@ struct PageContent: View {
         guard let header = page.header, let url = header.thumbnail else { return nil }
         let edge = PageHeaderView.artEdge(header, topInset: frame.top)
         return TintSource(url: url, pixels: ArtworkImage.pixels(edge: edge, scale: displayScale))
-    }
-}
-
-private struct Greeting: View {
-    @Environment(\.theme) private var theme
-
-    var body: some View {
-        Text(Self.greeting(hour: Calendar.current.component(.hour, from: .now)))
-            .font(.largeTitle.weight(.heavy))
-            .foregroundStyle(theme.text)
-            .accessibilityAddTraits(.isHeader)
-            .padding(.horizontal, Metrics.pagePadding)
-            .frame(minHeight: Metrics.greetingHeight, alignment: .bottom)
-    }
-
-    private static func greeting(hour: Int) -> String {
-        switch hour {
-        case 4..<12: "Good morning"
-        case 12..<18: "Good afternoon"
-        case 18..<23: "Good evening"
-        default: "Good night"
-        }
     }
 }
 
@@ -327,5 +335,124 @@ private struct ArriveInTurn: ViewModifier {
         } else {
             content
         }
+    }
+}
+
+/// Inline for a page's own title; none at all on a tab's first page, so the tab's large title stands.
+private struct PageTitle: ViewModifier {
+    let title: String?
+
+    func body(content: Content) -> some View {
+        if let title {
+            content
+                .navigationTitle(title)
+                .toolbarTitleDisplayMode(.inline)
+        } else {
+            content
+        }
+    }
+}
+
+extension EnvironmentValues {
+    /// Search's filter: the title of the only section to show, or nil for all.
+    @Entry var sectionScope: String?
+}
+
+/// Library's lists, as YouTube orders them or sorted here.
+enum LibrarySort: String, CaseIterable {
+    case recent, title, artist
+
+    var title: String {
+        switch self {
+        case .recent: "Recently Added"
+        case .title: "Title"
+        case .artist: "Artist"
+        }
+    }
+
+    var symbol: String {
+        switch self {
+        case .recent: "clock"
+        case .title: "textformat"
+        case .artist: "music.mic"
+        }
+    }
+}
+
+extension Route {
+    /// Library's own lists, which can be sorted.
+    var isLibraryList: Bool {
+        switch self {
+        case .libraryPlaylists, .libraryAlbums, .libraryArtists, .librarySongs: true
+        default: false
+        }
+    }
+}
+
+private extension YTMCore.Section {
+    func sorted(_ order: LibrarySort) -> YTMCore.Section {
+        func before(_ a: String, _ b: String) -> Bool {
+            a.localizedStandardCompare(b) == .orderedAscending
+        }
+        switch self {
+        case .cards(var section):
+            section.cards.sort { order == .artist ? before($0.subtitle, $1.subtitle) : before($0.title, $1.title) }
+            return .cards(section)
+        case .tracks(var section):
+            section.tracks.sort { order == .artist ? before($0.artistNames, $1.artistNames) : before($0.title, $1.title) }
+            return .tracks(section)
+        }
+    }
+}
+
+/// Apple Music's Library opens on its lists; so does Lily's, above what YouTube shows.
+private struct LibraryLinks: View {
+    private struct Link {
+        let title: String
+        let symbol: String
+        let route: Route
+    }
+
+    private static let links = [
+        Link(title: "Playlists", symbol: "music.note.list", route: .libraryPlaylists),
+        Link(title: "Artists", symbol: "music.mic", route: .libraryArtists),
+        Link(title: "Albums", symbol: "square.stack", route: .libraryAlbums),
+        Link(title: "Songs", symbol: "music.note", route: .librarySongs),
+        Link(title: "Downloaded", symbol: "arrow.down.circle", route: .downloads),
+    ]
+
+    @Environment(AppModel.self) private var app
+    @Environment(\.theme) private var theme
+
+    var body: some View {
+        VStack(spacing: 0) {
+            ForEach(Self.links, id: \.title) { link in
+                Button { app.open(link.route) } label: {
+                    HStack(spacing: 14) {
+                        Image(systemName: link.symbol)
+                            .font(.title3)
+                            .foregroundStyle(theme.accent)
+                            .frame(width: 30)
+                        Text(link.title)
+                            .font(.title3)
+                            .foregroundStyle(theme.text)
+                        Spacer()
+                        Image(systemName: "chevron.right")
+                            .font(.footnote.weight(.semibold))
+                            .foregroundStyle(theme.textDim)
+                    }
+                    .padding(.horizontal, Metrics.pagePadding)
+                    .frame(minHeight: 50)
+                    .contentShape(Rectangle())
+                }
+                .buttonStyle(RowPress())
+                .overlay(alignment: .bottom) {
+                    if link.route != .downloads {
+                        theme.divider.frame(height: 1).padding(.leading, Metrics.pagePadding + 44)
+                    }
+                }
+            }
+        }
+        .padding(.bottom, 12)
     }
 }

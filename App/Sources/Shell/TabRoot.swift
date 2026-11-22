@@ -23,6 +23,9 @@ struct TabRoot<Content: View>: View {
         NavigationStack(path: $navigation.routes) {
             content
                 .modifier(MiniPlayerRoom(tab: tab))
+                // Large, as Apple Music's tabs are, shrinking into the bar as the page scrolls.
+                .navigationTitle(tab.title)
+                .toolbarTitleDisplayMode(.large)
                 .toolbar {
                     ToolbarItem(placement: .topBarTrailing) { AccountButton(tab: tab) }
                 }
@@ -57,6 +60,38 @@ private struct MiniPlayerRoom: ViewModifier {
         content.safeAreaInset(edge: .bottom, spacing: 0) {
             let floating = !MiniPlayerAccessory.isAvailable && MiniPlayer.shown(on: tab, in: app)
             Color.clear.frame(height: floating ? FloatingMiniPlayer.room : 0)
+        }
+    }
+}
+
+extension AppTab {
+    /// The tab's large title. Home greets by the time of day.
+    var title: String {
+        switch self {
+        case .home: Self.greeting(hour: Calendar.current.component(.hour, from: .now))
+        case .explore: "Explore"
+        case .library: "Library"
+        case .history: "History"
+        case .search: "Search"
+        }
+    }
+
+    private static func greeting(hour: Int) -> String {
+        switch hour {
+        case 4..<12: "Good Morning"
+        case 12..<18: "Good Afternoon"
+        case 18..<23: "Good Evening"
+        default: "Good Night"
+        }
+    }
+}
+
+extension Route {
+    /// The page a tab opens on, whose title is the tab's.
+    var isTabRoot: Bool {
+        switch self {
+        case .home, .explore, .library, .history: true
+        default: false
         }
     }
 }
