@@ -58,6 +58,39 @@ jobs:
           SWIFT_TREAT_WARNINGS_AS_ERRORS=YES GCC_TREAT_WARNINGS_AS_ERRORS=YES
           build -quiet
 
+  # A test build for the phone: an unsigned Release .ipa that AltStore, SideStore or Feather signs on install.
+  # Only once lint, tests and the debug build pass, and never for a pull request from elsewhere.
+  ipa:
+    name: Test IPA
+    needs: [lint, test, build]
+    if: github.event_name != 'pull_request'
+    runs-on: xcode-27
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      # Without the keys the build still works; Settings then says Last.fm is unavailable.
+      - name: Add the Last.fm keys, if set
+        env:
+          LASTFM_API_KEY: ${{ secrets.LASTFM_API_KEY }}
+          LASTFM_API_SECRET: ${{ secrets.LASTFM_API_SECRET }}
+        run: |
+          if [[ -n $LASTFM_API_KEY && -n $LASTFM_API_SECRET ]]; then
+            printf 'LASTFM_API_KEY = %s\nLASTFM_API_SECRET = %s\n' "$LASTFM_API_KEY" "$LASTFM_API_SECRET" > Config/Secrets.xcconfig
+          fi
+      - name: Build Lily.ipa
+        run: zsh scripts/build-ipa.sh
+      - name: Name it by commit
+        run: mv build/Lily.ipa "build/Lily-${GITHUB_SHA::7}.ipa"
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: Lily-ipa-${{ github.run_number }}
+          path: build/Lily-*.ipa
+          if-no-files-found: error
+          compression-level: 0
+          retention-days: 14
+
   release:
     name: Release
     needs: [lint, test, build]
