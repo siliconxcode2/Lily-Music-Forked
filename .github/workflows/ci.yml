@@ -17,63 +17,39 @@ concurrency:
   group: ci-${{ github.ref }}
   cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
+env:
+  DEVELOPER_DIR: /Applications/Xcode_27.2.app/Contents/Developer
+
 jobs:
   lint:
     name: Lint
-    runs-on: macos-26
+    runs-on: xcode-27
     timeout-minutes: 10
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false
-      # GitHub's Mac images carry several Xcodes; the newest 27 is used, or the newest of all when there's none.
-      - name: Pick Xcode
-        run: |
-          xcode=$(ls -d /Applications/Xcode_27*.app 2>/dev/null | sort -V | tail -1)
-          [ -n "$xcode" ] || xcode=$(ls -d /Applications/Xcode_*.app | sort -V | tail -1)
-          ls -d /Applications/Xcode*.app
-          echo "DEVELOPER_DIR=$xcode/Contents/Developer" >> "$GITHUB_ENV"
-          DEVELOPER_DIR="$xcode/Contents/Developer" xcodebuild -version
-          DEVELOPER_DIR="$xcode/Contents/Developer" swift --version
       - run: zsh scripts/lint.sh
 
   test:
     name: Test
-    runs-on: macos-27
+    runs-on: xcode-27
     timeout-minutes: 20
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false
-      # GitHub's Mac images carry several Xcodes; the newest 27 is used, or the newest of all when there's none.
-      - name: Pick Xcode
-        run: |
-          xcode=$(ls -d /Applications/Xcode_27*.app 2>/dev/null | sort -V | tail -1)
-          [ -n "$xcode" ] || xcode=$(ls -d /Applications/Xcode_*.app | sort -V | tail -1)
-          ls -d /Applications/Xcode*.app
-          echo "DEVELOPER_DIR=$xcode/Contents/Developer" >> "$GITHUB_ENV"
-          DEVELOPER_DIR="$xcode/Contents/Developer" xcodebuild -version
-          DEVELOPER_DIR="$xcode/Contents/Developer" swift --version
       - run: swift test -Xswiftc -warnings-as-errors
         working-directory: Packages/YTMKit
 
   build:
     name: Build
-    runs-on: macos-27
+    runs-on: xcode-27
     timeout-minutes: 30
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false
-      # GitHub's Mac images carry several Xcodes; the newest 27 is used, or the newest of all when there's none.
-      - name: Pick Xcode
-        run: |
-          xcode=$(ls -d /Applications/Xcode_27*.app 2>/dev/null | sort -V | tail -1)
-          [ -n "$xcode" ] || xcode=$(ls -d /Applications/Xcode_*.app | sort -V | tail -1)
-          ls -d /Applications/Xcode*.app
-          echo "DEVELOPER_DIR=$xcode/Contents/Developer" >> "$GITHUB_ENV"
-          DEVELOPER_DIR="$xcode/Contents/Developer" xcodebuild -version
-          DEVELOPER_DIR="$xcode/Contents/Developer" swift --version
       # One architecture and no index store: nothing here runs the app or reads the index.
       - run: >-
           xcodebuild -project Lily.xcodeproj -scheme Lily -configuration Debug
