@@ -1,0 +1,67 @@
+# YouTube changes without warning, so its pages, lyrics and radio are checked daily, signed out.
+name: Live checks
+
+on:
+  schedule:
+    - cron: '23 6 * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: live
+  cancel-in-progress: true
+
+jobs:
+  # A scheduled run's event says nothing of the repository, so its visibility is asked for.
+  visibility:
+    name: Visibility
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    outputs:
+      public: ${{ steps.check.outputs.public }}
+    steps:
+      - id: check
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: echo "public=$(gh api "repos/$GITHUB_REPOSITORY" --jq '.private | not')" >> "$GITHUB_OUTPUT"
+
+  youtube:
+    name: YouTube
+    needs: visibility
+    # A private repository pays for macOS minutes, so only a run asked for by hand happens there.
+    if: github.event_name == 'workflow_dispatch' || needs.visibility.outputs.public == 'true'
+    runs-on: xcode-27
+    timeout-minutes: 30
+    permissions:
+      contents: read
+      issues: write
+    env:
+      DEVELOPER_DIR: /Applications/Xcode_27.2.app/Contents/Developer
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      # YouTube asks a datacenter address to sign in before it gives out streams, so the stream,
+      # Premium and audio checks only work from home: `swift run ytmcheck all` on a Mac.
+      - run: |
+          status=0
+          for group in pages lyrics radio; do swift run ytmcheck "$group" || status=1; done
+          exit $status
+        working-directory: Packages/YTMKit
+
+      # One open issue per breakage, commented on while it lasts, rather than a failed run nobody opens.
+      - name: Open an issue
+        if: failure()
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          title="Live checks are failing"
+          run="$GITHUB_SERVER_URL/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID"
+          existing=$(gh issue list --repo "$GITHUB_REPOSITORY" --state open --search "in:title \"$title\"" --json number --jq '.[0].number // ""')
+          if [[ -n $existing ]]; then
+            gh issue comment "$existing" --repo "$GITHUB_REPOSITORY" --body "Still failing: $run"
+          else
+            gh issue create --repo "$GITHUB_REPOSITORY" --title "$title" --body "A daily check against YouTube failed; its log names the check: $run"
+          fi

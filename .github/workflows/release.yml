@@ -1,0 +1,168 @@
+# Called by CI once a commit on main passes its checks. When the app's version has no tag yet,
+# it builds that version, then tags the commit and publishes it with its app source, so bumping
+# MARKETING_VERSION is all a release takes.
+name: Release
+
+on:
+  workflow_call:
+    secrets:
+      LASTFM_API_KEY:
+        required: true
+      LASTFM_API_SECRET:
+        required: true
+
+permissions: {}
+
+defaults:
+  run:
+    shell: bash
+
+jobs:
+  version:
+    name: Version
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      contents: read
+    outputs:
+      version: ${{ steps.version.outputs.version }}
+      previous: ${{ steps.version.outputs.previous }}
+      new: ${{ steps.version.outputs.new }}
+    steps:
+      - id: version
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPO: ${{ github.repository }}
+        run: |
+          versions=$(gh api "repos/$REPO/contents/Lily.xcodeproj/project.pbxproj?ref=$GITHUB_SHA" -H 'Accept: application/vnd.github.raw' \
+            | grep -oE 'MARKETING_VERSION = [^;]+' | cut -d' ' -f3 | sort -u)
+          if [[ ! $versions =~ ^[0-9]+(\.[0-9]+)*$ ]]; then
+            echo "::error::MARKETING_VERSION should be one version, the same in every configuration, not: $versions"
+            exit 1
+          fi
+          version=$versions
+          previous=$(gh release list --repo "$REPO" --exclude-drafts --exclude-pre-releases --limit 1 --json tagName --jq '.[0].tagName // ""')
+          tagged=$(gh api "repos/$REPO/git/matching-refs/tags/v$version" --jq "any(.[]; .ref == \"refs/tags/v$version\")")
+
+          if [[ -n $previous && $(printf '%s\n' "${previous#v}" "$version" | sort -V | tail -n 1) != "$version" ]]; then
+            echo "::error::Version $version is older than the latest release, $previous."
+            exit 1
+          fi
+          # Only the latest release's own tag may already exist; any other was made by hand or outlived
+          # its release, and releasing over it would name some other commit.
+          new=true
+          if [[ $tagged == true ]]; then
+            if [[ v$version != "$previous" ]]; then
+              echo "::error::v$version is tagged but isn't the latest release. Bump the version, or delete the tag."
+              exit 1
+            fi
+            new=false
+          fi
+          printf 'version=%s\nprevious=%s\nnew=%s\n' "$version" "$previous" "$new" >> "$GITHUB_OUTPUT"
+          echo "Version $version: $([[ $new == true ]] && echo 'new, so it will be released' || echo 'already released')."
+
+  build:
+    name: Build
+    needs: version
+    if: needs.version.outputs.new == 'true'
+    runs-on: xcode-27
+    timeout-minutes: 30
+    permissions:
+      contents: read
+    env:
+      DEVELOPER_DIR: /Applications/Xcode_27.2.app/Contents/Developer
+      VERSION: ${{ needs.version.outputs.version }}
+      PREVIOUS: ${{ needs.version.outputs.previous }}
+    steps:
+      # The whole history, for the release notes' commits since the last release.
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Add the Last.fm keys
+        env:
+          LASTFM_API_KEY: ${{ secrets.LASTFM_API_KEY }}
+          LASTFM_API_SECRET: ${{ secrets.LASTFM_API_SECRET }}
+        run: |
+          if [[ -z $LASTFM_API_KEY || -z $LASTFM_API_SECRET ]]; then
+            echo "::error::The LASTFM_API_KEY and LASTFM_API_SECRET secrets are missing."
+            exit 1
+          fi
+          printf 'LASTFM_API_KEY = %s\nLASTFM_API_SECRET = %s\n' "$LASTFM_API_KEY" "$LASTFM_API_SECRET" > Config/Secrets.xcconfig
+
+      - name: Build Lily.ipa
+        run: zsh scripts/build-ipa.sh
+
+      - name: Write the app source
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPO: ${{ github.repository }}
+        run: |
+          info() { /usr/libexec/PlistBuddy -c "Print $1" build/DerivedData/Build/Products/Release-iphoneos/Lily.app/Info.plist; }
+          if [[ $(info CFBundleShortVersionString) != "$VERSION" ]]; then
+            echo "::error::The app was built as $(info CFBundleShortVersionString), not $VERSION."
+            exit 1
+          fi
+          tag=v$VERSION
+
+          # What a user would notice, from the commit subjects, as commits go straight to main.
+          if [[ -n $PREVIOUS ]]; then
+            git log --reverse --format=%s "$PREVIOUS..$GITHUB_SHA" | sed -nE 's/^(feat|fix|perf): /- /p' > build/notes.md
+            [[ -s build/notes.md ]] || echo "Lily $VERSION." > build/notes.md
+            gh release download "$PREVIOUS" --repo "$REPO" --pattern source.json --output "$RUNNER_TEMP/previous.json"
+          else
+            echo "The first release of Lily." > build/notes.md
+            echo '{}' > "$RUNNER_TEMP/previous.json"
+          fi
+
+          size=$(stat -f%z build/Lily.ipa)
+          sha=$(shasum -a 256 build/Lily.ipa | cut -d' ' -f1)
+          jq --arg version "$VERSION" --arg build "$(info CFBundleVersion)" --arg min_os "$(info MinimumOSVersion)" \
+            --arg date "$(date -u +%Y-%m-%dT%H:%M:%SZ)" --arg sha "$sha" --argjson size "$size" \
+            --arg url "https://github.com/$REPO/releases/download/$tag/Lily.ipa" \
+            --rawfile notes build/notes.md --slurpfile previous "$RUNNER_TEMP/previous.json" '
+            .apps[0].versions = [{
+              version: $version, buildVersion: $build, date: $date, downloadURL: $url, size: $size,
+              sha256: $sha, minOSVersion: $min_os, localizedDescription: ($notes | sub("\\s+$"; ""))
+            }] + [($previous[0].apps[0].versions // [])[] | select(.version != $version)]
+          ' docs/source.json > build/source.json
+
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: release
+          path: |
+            build/Lily.ipa
+            build/source.json
+            build/notes.md
+          if-no-files-found: error
+          compression-level: 0
+          retention-days: 7
+
+  publish:
+    name: Publish
+    needs: [version, build]
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: write
+      id-token: write
+      attestations: write
+    steps:
+      - uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
+        with:
+          name: release
+
+      # Lets anyone check the .ipa was built here, from this commit.
+      - uses: actions/attest-build-provenance@4d101475d8b20a2381f78447822ac1eab6504dd8 # v4.2.2
+        with:
+          subject-path: Lily.ipa
+
+      - name: Publish the release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPO: ${{ github.repository }}
+          VERSION: ${{ needs.version.outputs.version }}
+        run: |
+          gh release create "v$VERSION" Lily.ipa source.json --repo "$REPO" --target "$GITHUB_SHA" \
+            --title "Lily $VERSION" --notes-file notes.md

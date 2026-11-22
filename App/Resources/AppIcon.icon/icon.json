@@ -1,0 +1,161 @@
+{
+  "fill-specializations": [
+    {
+      "value": {
+        "linear-gradient": [
+          "srgb:0.09020,0.06667,0.11373,1.00000",
+          "srgb:0.04314,0.03922,0.05882,1.00000"
+        ],
+        "orientation": {
+          "start": {
+            "x": 0.5,
+            "y": 0
+          },
+          "stop": {
+            "x": 0.5,
+            "y": 1
+          }
+        }
+      }
+    },
+    {
+      "appearance": "dark",
+      "value": {
+        "linear-gradient": [
+          "srgb:0.05882,0.04314,0.07451,1.00000",
+          "srgb:0.01569,0.01176,0.01961,1.00000"
+        ],
+        "orientation": {
+          "start": {
+            "x": 0.5,
+            "y": 0
+          },
+          "stop": {
+            "x": 0.5,
+            "y": 1
+          }
+        }
+      }
+    }
+  ],
+  "groups": [
+    {
+      "layers": [
+        {
+          "glass": true,
+          "image-name": "stamens.svg",
+          "name": "stamens",
+          "fill-specializations": [
+            {
+              "appearance": "dark",
+              "value": {
+                "linear-gradient": [
+                  "srgb:0.94118,0.46667,0.87451,1.00000",
+                  "srgb:0.86275,0.45490,0.91373,1.00000"
+                ],
+                "orientation": {
+                  "start": {
+                    "x": 0,
+                    "y": 0.5
+                  },
+                  "stop": {
+                    "x": 1,
+                    "y": 0.5
+                  }
+                }
+              }
+            },
+            {
+              "appearance": "tinted",
+              "value": {
+                "solid": "srgb:0.90000,0.90000,0.90000,1.00000"
+              }
+            }
+          ]
+        }
+      ],
+      "shadow": {
+        "kind": "layer-color",
+        "opacity": 0.5
+      },
+      "translucency": {
+        "enabled": true,
+        "value": 0.15
+      }
+    },
+    {
+      "layers": [
+        {
+          "glass": true,
+          "image-name": "lily.svg",
+          "name": "lily",
+          "fill-specializations": [
+            {
+              "appearance": "dark",
+              "value": {
+                "linear-gradient": [
+                  "srgb:1.00000,0.47843,0.85098,1.00000",
+                  "srgb:0.66275,0.41961,1.00000,1.00000"
+                ],
+                "orientation": {
+                  "start": {
+                    "x": 0.11,
+                    "y": 0
+                  },
+                  "stop": {
+                    "x": 0.89,
+                    "y": 1
+                  }
+                }
+              }
+            },
+            {
+              "appearance": "tinted",
+              "value": {
+                "solid": "srgb:0.90000,0.90000,0.90000,1.00000"
+              }
+            }
+          ]
+        }
+      ],
+      "shadow": {
+        "kind": "layer-color",
+        "opacity": 0.5
+      },
+      "translucency": {
+        "enabled": true,
+        "value": 0.15
+      }
+    },
+    {
+      "layers": [
+        {
+          "glass": false,
+          "image-name": "glow.svg",
+          "name": "glow",
+          "hidden-specializations": [
+            {
+              "appearance": "tinted",
+              "value": true
+            }
+          ]
+        }
+      ],
+      "shadow": {
+        "kind": "none",
+        "opacity": 0
+      },
+      "specular": false,
+      "translucency": {
+        "enabled": false,
+        "value": 0
+      }
+    }
+  ],
+  "supported-platforms": {
+    "circles": [
+      "watchOS"
+    ],
+    "squares": "shared"
+  }
+}

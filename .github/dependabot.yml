@@ -1,0 +1,15 @@
+# The workflows pin each action to a commit; this keeps those pins current, in one weekly pull request.
+version: 2
+updates:
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly
+    # A new action release waits a week first, time for a compromised one to be caught.
+    cooldown:
+      default-days: 7
+    groups:
+      actions:
+        patterns: ['*']
+    commit-message:
+      prefix: ci

@@ -1,0 +1,54 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="400" viewBox="0 0 1280 400">
+  <title>Lily: a native YouTube Music client for iPhone</title>
+  <defs>
+    <radialGradient id="glow" cx="82%" cy="52%" r="52%">
+      <stop offset="0" stop-color="#d65db1" stop-opacity="0.42"/>
+      <stop offset="0.45" stop-color="#d65db1" stop-opacity="0.09"/>
+      <stop offset="1" stop-color="#d65db1" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="glow2" cx="6%" cy="0%" r="50%">
+      <stop offset="0" stop-color="#9b5cff" stop-opacity="0.2"/>
+      <stop offset="1" stop-color="#9b5cff" stop-opacity="0"/>
+    </radialGradient>
+    <!-- As in the app's icon, in the flower's own coordinates. -->
+    <linearGradient id="ink" gradientUnits="userSpaceOnUse" x1="240" y1="180" x2="784" y2="864">
+      <stop offset="0" stop-color="#f472d0"/>
+      <stop offset="1" stop-color="#9b5cff"/>
+    </linearGradient>
+    <linearGradient id="title" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#ffffff"/>
+      <stop offset="1" stop-color="#f6c4ea"/>
+    </linearGradient>
+    <style>
+      text { font-family: -apple-system, 'SF Pro Display', system-ui, 'Segoe UI Variable Display', 'Segoe UI', Inter, 'Helvetica Neue', Arial, sans-serif; }
+      .pill { fill: #ffffff; fill-opacity: 0.07; stroke: #ffffff; stroke-opacity: 0.14; }
+      .pt { font-size: 17px; font-weight: 600; fill: #e8e8ec; }
+    </style>
+  </defs>
+
+  <rect width="1280" height="400" rx="28" fill="#0c0a10"/>
+  <rect width="1280" height="400" rx="28" fill="url(#glow)"/>
+  <rect width="1280" height="400" rx="28" fill="url(#glow2)"/>
+  <rect x="0.5" y="0.5" width="1279" height="399" rx="27.5" fill="none" stroke="#ffffff" stroke-opacity="0.08"/>
+
+  <text x="86" y="150" font-size="96" font-weight="700" letter-spacing="-2" fill="url(#title)">Lily</text>
+  <text x="90" y="202" font-size="30" font-weight="600" fill="#f0f0f3">A native YouTube Music client for iPhone.</text>
+  <text x="90" y="240" font-size="19" fill="#9a9aa3">Native Swift and SwiftUI. No browser, no web wrapper, just music.</text>
+
+  <g>
+    <rect class="pill" x="90" y="282" width="226" height="40" rx="20"/>
+    <text class="pt" x="203" y="308" text-anchor="middle">256 kbps with Premium</text>
+    <rect class="pill" x="328" y="282" width="210" height="40" rx="20"/>
+    <text class="pt" x="433" y="308" text-anchor="middle">Gapless &amp; crossfade</text>
+    <rect class="pill" x="550" y="282" width="164" height="40" rx="20"/>
+    <text class="pt" x="632" y="308" text-anchor="middle">Synced lyrics</text>
+    <rect class="pill" x="726" y="282" width="166" height="40" rx="20"/>
+    <text class="pt" x="809" y="308" text-anchor="middle">Opus, natively</text>
+  </g>
+
+  <!-- The lily from the app's icon. -->
+  <g transform="translate(830 -34) scale(0.45)">
+    <path fill="none" stroke="url(#ink)" stroke-width="26" stroke-linecap="round" stroke-linejoin="round" d="M 478 845 C 494 786 500 726 498 677 C 520 674 543 669 564 661 C 644 635 716 585 753 518 C 774 479 813 474 844 503 C 826 431 778 380 729 392 C 688 401 629 548 564 661 M 476 655 C 374 627 290 553 265 458 C 255 415 218 401 180 420 C 215 357 273 317 319 341 C 363 364 405 578 476 655 M 474 536 C 449 459 429 340 425 225 M 503 528 C 514 439 536 320 565 213 M 532 540 C 579 469 631 374 690 283"/>
+    <path fill="url(#ink)" d="M 390 225 A 35 35 0 1 0 460 225 A 35 35 0 1 0 390 225 Z M 530 213 A 35 35 0 1 0 600 213 A 35 35 0 1 0 530 213 Z M 655 283 A 35 35 0 1 0 725 283 A 35 35 0 1 0 655 283 Z"/>
+  </g>
+</svg>

@@ -1,0 +1,73 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+    paths: ['**', '!**.md', '!docs/**', 'docs/source.json', '!LICENSE']
+  pull_request:
+    paths: ['**', '!**.md', '!docs/**', 'docs/source.json', '!LICENSE']
+  # Run by hand on main, it releases a version that a push didn't, such as the one before going public.
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+# Only a pull request's older runs are cancelled, as main's may be partway through publishing a release.
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+env:
+  DEVELOPER_DIR: /Applications/Xcode_27.2.app/Contents/Developer
+
+jobs:
+  lint:
+    name: Lint
+    runs-on: xcode-27
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - run: zsh scripts/lint.sh
+
+  test:
+    name: Test
+    runs-on: xcode-27
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - run: swift test -Xswiftc -warnings-as-errors
+        working-directory: Packages/YTMKit
+
+  build:
+    name: Build
+    runs-on: xcode-27
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      # One architecture and no index store: nothing here runs the app or reads the index.
+      - run: >-
+          xcodebuild -project Lily.xcodeproj -scheme Lily -configuration Debug
+          -destination 'generic/platform=iOS Simulator' -derivedDataPath "$RUNNER_TEMP/DerivedData"
+          ARCHS=arm64 CODE_SIGNING_ALLOWED=NO COMPILER_INDEX_STORE_ENABLE=NO
+          SWIFT_TREAT_WARNINGS_AS_ERRORS=YES GCC_TREAT_WARNINGS_AS_ERRORS=YES
+          build -quiet
+
+  release:
+    name: Release
+    needs: [lint, test, build]
+    # A private repository's releases can't be downloaded by the stores, nor attested for free.
+    if: github.ref == 'refs/heads/main' && !github.event.repository.private
+    uses: ./.github/workflows/release.yml
+    permissions:
+      contents: write
+      id-token: write
+      attestations: write
+    secrets:
+      LASTFM_API_KEY: ${{ secrets.LASTFM_API_KEY }}
+      LASTFM_API_SECRET: ${{ secrets.LASTFM_API_SECRET }}

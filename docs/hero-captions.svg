@@ -1,0 +1,60 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="150" viewBox="0 0 1280 150">
+  <title>Artist pages with their banner and the whole discography; synced lyrics in the artwork's colours; and a queue you drag into order and save as a playlist</title>
+  <defs>
+    <!-- The banner's glows, laid over each tile in its own bounds. -->
+    <radialGradient id="glow" cx="92%" cy="0%" r="75%">
+      <stop offset="0" stop-color="#d65db1" stop-opacity="0.34"/>
+      <stop offset="0.5" stop-color="#d65db1" stop-opacity="0.07"/>
+      <stop offset="1" stop-color="#d65db1" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="glow2" cx="0%" cy="100%" r="70%">
+      <stop offset="0" stop-color="#9b5cff" stop-opacity="0.2"/>
+      <stop offset="1" stop-color="#9b5cff" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="title" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#ffffff"/>
+      <stop offset="1" stop-color="#f6c4ea"/>
+    </linearGradient>
+    <linearGradient id="ink" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#f472d0"/>
+      <stop offset="1" stop-color="#9b5cff"/>
+    </linearGradient>
+  </defs>
+  <style>
+    text { font-family: -apple-system, 'SF Pro Display', system-ui, 'Segoe UI Variable Display', 'Segoe UI', Inter, 'Helvetica Neue', Arial, sans-serif; }
+    .tile { fill: #0c0a10; }
+    .edge { fill: none; stroke: #ffffff; stroke-opacity: 0.08; }
+    .big { font-size: 54px; font-weight: 700; fill: url(#title); letter-spacing: -1px; }
+    .unit { font-size: 24px; font-weight: 600; fill: #f472d0; }
+    .title { font-size: 26px; font-weight: 700; fill: url(#title); }
+    .cap { font-size: 17px; fill: #a1a1aa; }
+    .tick { fill: url(#ink); }
+  </style>
+  <g transform="translate(0.0 0)">
+    <rect class="tile" x="0.5" y="0.5" width="413.7" height="149" rx="22"/>
+    <rect fill="url(#glow)" x="0.5" y="0.5" width="413.7" height="149" rx="22"/>
+    <rect fill="url(#glow2)" x="0.5" y="0.5" width="413.7" height="149" rx="22"/>
+    <rect class="edge" x="0.5" y="0.5" width="413.7" height="149" rx="22"/>
+    <rect class="tick" x="32" y="36" width="36" height="5" rx="2.5"/>
+    <text class="title" x="32" y="86">Artist pages</text>
+    <text class="cap" x="32" y="116">with their banner and every release</text>
+  </g>
+  <g transform="translate(432.7 0)">
+    <rect class="tile" x="0.5" y="0.5" width="413.7" height="149" rx="22"/>
+    <rect fill="url(#glow)" x="0.5" y="0.5" width="413.7" height="149" rx="22"/>
+    <rect fill="url(#glow2)" x="0.5" y="0.5" width="413.7" height="149" rx="22"/>
+    <rect class="edge" x="0.5" y="0.5" width="413.7" height="149" rx="22"/>
+    <rect class="tick" x="32" y="36" width="36" height="5" rx="2.5"/>
+    <text class="title" x="32" y="86">Synced lyrics</text>
+    <text class="cap" x="32" y="116">in the artwork's colours, tap to jump</text>
+  </g>
+  <g transform="translate(865.3 0)">
+    <rect class="tile" x="0.5" y="0.5" width="413.7" height="149" rx="22"/>
+    <rect fill="url(#glow)" x="0.5" y="0.5" width="413.7" height="149" rx="22"/>
+    <rect fill="url(#glow2)" x="0.5" y="0.5" width="413.7" height="149" rx="22"/>
+    <rect class="edge" x="0.5" y="0.5" width="413.7" height="149" rx="22"/>
+    <rect class="tick" x="32" y="36" width="36" height="5" rx="2.5"/>
+    <text class="title" x="32" y="86">Up next</text>
+    <text class="cap" x="32" y="116">drag it into order, save it as a playlist</text>
+  </g>
+</svg>

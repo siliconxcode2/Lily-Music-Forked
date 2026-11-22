@@ -1,0 +1,98 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="470" viewBox="0 0 1280 470">
+  <title>Make it yours: three looks, Black, Dark and Light, and nine accents, Lily's orchid, Red, Orange, Green, Teal, Blue, Purple, Pink, or one taken from the artwork</title>
+  <defs>
+    <radialGradient id="glow" cx="88%" cy="0%" r="55%">
+      <stop offset="0" stop-color="#d65db1" stop-opacity="0.3"/>
+      <stop offset="0.5" stop-color="#d65db1" stop-opacity="0.06"/>
+      <stop offset="1" stop-color="#d65db1" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="glow2" cx="4%" cy="100%" r="48%">
+      <stop offset="0" stop-color="#9b5cff" stop-opacity="0.16"/>
+      <stop offset="1" stop-color="#9b5cff" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="title" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#ffffff"/>
+      <stop offset="1" stop-color="#f6c4ea"/>
+    </linearGradient>
+    <!-- Stands in for any cover's colour. -->
+    <linearGradient id="artwork" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#ffb35c"/>
+      <stop offset="0.35" stop-color="#ff5c8a"/>
+      <stop offset="0.7" stop-color="#5c6bff"/>
+      <stop offset="1" stop-color="#7be3b0"/>
+    </linearGradient>
+    <style>
+      text { font-family: -apple-system, 'SF Pro Display', system-ui, 'Segoe UI Variable Display', 'Segoe UI', Inter, 'Helvetica Neue', Arial, sans-serif; }
+      .h1 { font-size: 34px; font-weight: 700; fill: url(#title); }
+      .sub { font-size: 20px; fill: #9a9aa3; }
+      .label { font-size: 15px; font-weight: 700; letter-spacing: 1.6px; fill: #8b8b94; }
+      .look { font-size: 24px; font-weight: 700; }
+      .lookNote { font-size: 18px; }
+      .accent { font-size: 18px; font-weight: 600; fill: #e8e8ec; }
+      .accentNote { font-size: 15px; fill: #8b8b94; }
+      .frame { fill: none; stroke: #ffffff; stroke-opacity: 0.14; }
+    </style>
+  </defs>
+
+  <rect width="1280" height="470" rx="28" fill="#0c0a10"/>
+  <rect width="1280" height="470" rx="28" fill="url(#glow)"/>
+  <rect width="1280" height="470" rx="28" fill="url(#glow2)"/>
+  <rect x="0.5" y="0.5" width="1279" height="469" rx="27.5" fill="none" stroke="#ffffff" stroke-opacity="0.08"/>
+
+  <text class="h1" x="56" y="72">Make it yours</text>
+  <text class="sub" x="56" y="102">Settings ▸ Appearance · any look with any accent</text>
+
+  <text class="label" x="56" y="150">LOOK</text>
+  <!-- Each tile in its look's own panel and text colours, with Lily's orchid as that look shows it. -->
+  <g transform="translate(56 166)">
+    <rect width="376" height="112" rx="16" fill="#000000"/>
+    <rect class="frame" x="0.5" y="0.5" width="375" height="111" rx="15.5"/>
+    <text class="look" x="24" y="44" fill="#ffffff">Black</text>
+    <text class="lookNote" x="24" y="72" fill="#b3b3b3">pure black for OLED, where Lily starts</text>
+    <rect x="24" y="92" width="120" height="6" rx="3" fill="#d65db1"/>
+    <rect x="152" y="92" width="200" height="6" rx="3" fill="#222222"/>
+  </g>
+  <g transform="translate(452 166)">
+    <rect width="376" height="112" rx="16" fill="#121212"/>
+    <rect class="frame" x="0.5" y="0.5" width="375" height="111" rx="15.5"/>
+    <text class="look" x="24" y="44" fill="#ffffff">Dark</text>
+    <text class="lookNote" x="24" y="72" fill="#b3b3b3">soft greys, easy at night</text>
+    <rect x="24" y="92" width="120" height="6" rx="3" fill="#d65db1"/>
+    <rect x="152" y="92" width="200" height="6" rx="3" fill="#2a2a2a"/>
+  </g>
+  <g transform="translate(848 166)">
+    <rect width="376" height="112" rx="16" fill="#ffffff"/>
+    <text class="look" x="24" y="44" fill="#0f0f0f">Light</text>
+    <text class="lookNote" x="24" y="72" fill="#5c5c5c">bright, for daytime</text>
+    <rect x="24" y="92" width="120" height="6" rx="3" fill="#c8319b"/>
+    <rect x="152" y="92" width="200" height="6" rx="3" fill="#e0e0e0"/>
+  </g>
+
+  <text class="label" x="56" y="322">ACCENT</text>
+  <!-- The colours of YTMCore's Accent, in the order Settings offers them. -->
+  <g transform="translate(0 368)" text-anchor="middle">
+    <circle cx="121" r="31" fill="none" stroke="#d65db1" stroke-width="2.5" stroke-opacity="0.7"/>
+    <circle cx="121" r="24" fill="#d65db1"/>
+    <text class="accent" x="121" y="60">Lily</text>
+    <text class="accentNote" x="121" y="80">the default</text>
+
+    <circle cx="250" r="24" fill="#ff0033"/>
+    <text class="accent" x="250" y="60">Red</text>
+    <circle cx="379" r="24" fill="#ff6a13"/>
+    <text class="accent" x="379" y="60">Orange</text>
+    <circle cx="508" r="24" fill="#1db954"/>
+    <text class="accent" x="508" y="60">Green</text>
+    <circle cx="637" r="24" fill="#00a89d"/>
+    <text class="accent" x="637" y="60">Teal</text>
+    <circle cx="766" r="24" fill="#3d7bff"/>
+    <text class="accent" x="766" y="60">Blue</text>
+    <circle cx="895" r="24" fill="#9b5cff"/>
+    <text class="accent" x="895" y="60">Purple</text>
+    <circle cx="1024" r="24" fill="#f0458f"/>
+    <text class="accent" x="1024" y="60">Pink</text>
+
+    <circle cx="1153" r="24" fill="url(#artwork)"/>
+    <text class="accent" x="1153" y="60">Artwork</text>
+    <text class="accentNote" x="1153" y="80">follows the song</text>
+  </g>
+</svg>

@@ -1,0 +1,81 @@
+{
+  "name": "Lily",
+  "identifier": "io.github.visxoz.lily",
+  "subtitle": "A native YouTube Music client for iPhone.",
+  "description": "Lily is a YouTube Music client written in Swift and SwiftUI, with no web views. Premium audio at 256 kbps, gapless playback and crossfade, synced lyrics, downloads for offline play, and a look that takes on each song's artwork.",
+  "iconURL": "https://raw.githubusercontent.com/Visxoz/Lily-ios/refs/heads/main/docs/icon.png",
+  "website": "https://github.com/Visxoz/Lily-ios",
+  "tintColor": "#d65db1",
+  "featuredApps": [
+    "local.lily.ios"
+  ],
+  "apps": [
+    {
+      "name": "Lily",
+      "bundleIdentifier": "local.lily.ios",
+      "developerName": "Visxoz",
+      "subtitle": "A native YouTube Music client.",
+      "localizedDescription": "Lily is a YouTube Music client for iPhone, native from top to bottom: Swift and SwiftUI on Apple's own audio engine, with no web views.\n\n• 256 kbps Opus with Premium, gapless playback, a crossfade of your chosen length, volume levelling, a ten-band equaliser, and crossfeed, mono and balance for headphones\n• Synced lyrics you can tap to jump to, and a queue you drag into order\n• Downloads for songs, albums and playlists, and smart downloads that pick for you\n• Radio, autoplay, Smart Shuffle, history, and search with recent searches\n• Pure black and orchid, or dark or light in eight other accents, including one that follows the artwork\n• The lock screen, Control Center, AirPods and Last.fm\n\nWorks signed out; sign in with Google for your own library and feed.\n\nLily is unofficial. It uses YouTube's undocumented API, which is against YouTube's terms of service. Not affiliated with YouTube or Google.",
+      "iconURL": "https://raw.githubusercontent.com/Visxoz/Lily-ios/refs/heads/main/docs/icon.png",
+      "tintColor": "#d65db1",
+      "category": "entertainment",
+      "screenshots": [
+        {
+          "imageURL": "https://raw.githubusercontent.com/Visxoz/Lily-ios/refs/heads/main/docs/home.jpg",
+          "width": 542,
+          "height": 1180
+        },
+        {
+          "imageURL": "https://raw.githubusercontent.com/Visxoz/Lily-ios/refs/heads/main/docs/nowplaying.jpg",
+          "width": 542,
+          "height": 1180
+        },
+        {
+          "imageURL": "https://raw.githubusercontent.com/Visxoz/Lily-ios/refs/heads/main/docs/album.jpg",
+          "width": 542,
+          "height": 1180
+        },
+        {
+          "imageURL": "https://raw.githubusercontent.com/Visxoz/Lily-ios/refs/heads/main/docs/search.jpg",
+          "width": 542,
+          "height": 1180
+        },
+        {
+          "imageURL": "https://raw.githubusercontent.com/Visxoz/Lily-ios/refs/heads/main/docs/explore.jpg",
+          "width": 542,
+          "height": 1180
+        },
+        {
+          "imageURL": "https://raw.githubusercontent.com/Visxoz/Lily-ios/refs/heads/main/docs/downloads.jpg",
+          "width": 542,
+          "height": 1180
+        },
+        {
+          "imageURL": "https://raw.githubusercontent.com/Visxoz/Lily-ios/refs/heads/main/docs/equaliser.jpg",
+          "width": 542,
+          "height": 1180
+        },
+        {
+          "imageURL": "https://raw.githubusercontent.com/Visxoz/Lily-ios/refs/heads/main/docs/home-light.jpg",
+          "width": 542,
+          "height": 1180
+        }
+      ],
+      "screenshotURLs": [
+        "https://raw.githubusercontent.com/Visxoz/Lily-ios/refs/heads/main/docs/home.jpg",
+        "https://raw.githubusercontent.com/Visxoz/Lily-ios/refs/heads/main/docs/nowplaying.jpg",
+        "https://raw.githubusercontent.com/Visxoz/Lily-ios/refs/heads/main/docs/album.jpg",
+        "https://raw.githubusercontent.com/Visxoz/Lily-ios/refs/heads/main/docs/search.jpg",
+        "https://raw.githubusercontent.com/Visxoz/Lily-ios/refs/heads/main/docs/explore.jpg",
+        "https://raw.githubusercontent.com/Visxoz/Lily-ios/refs/heads/main/docs/downloads.jpg",
+        "https://raw.githubusercontent.com/Visxoz/Lily-ios/refs/heads/main/docs/equaliser.jpg",
+        "https://raw.githubusercontent.com/Visxoz/Lily-ios/refs/heads/main/docs/home-light.jpg"
+      ],
+      "appPermissions": {
+        "entitlements": [],
+        "privacy": {}
+      }
+    }
+  ],
+  "news": []
+}

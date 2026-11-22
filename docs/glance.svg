@@ -1,0 +1,69 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="190" viewBox="0 0 1280 190">
+  <title>256 kbps Opus with YouTube Premium. A ten-band equaliser. Nine accents in black, dark or light. No third-party packages, just Swift and Apple's own frameworks.</title>
+  <defs>
+    <!-- The banner's glows, laid over each tile in its own bounds. -->
+    <radialGradient id="glow" cx="92%" cy="0%" r="75%">
+      <stop offset="0" stop-color="#d65db1" stop-opacity="0.34"/>
+      <stop offset="0.5" stop-color="#d65db1" stop-opacity="0.07"/>
+      <stop offset="1" stop-color="#d65db1" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="glow2" cx="0%" cy="100%" r="70%">
+      <stop offset="0" stop-color="#9b5cff" stop-opacity="0.2"/>
+      <stop offset="1" stop-color="#9b5cff" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="title" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#ffffff"/>
+      <stop offset="1" stop-color="#f6c4ea"/>
+    </linearGradient>
+    <linearGradient id="ink" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#f472d0"/>
+      <stop offset="1" stop-color="#9b5cff"/>
+    </linearGradient>
+  </defs>
+  <style>
+    text { font-family: -apple-system, 'SF Pro Display', system-ui, 'Segoe UI Variable Display', 'Segoe UI', Inter, 'Helvetica Neue', Arial, sans-serif; }
+    .tile { fill: #0c0a10; }
+    .edge { fill: none; stroke: #ffffff; stroke-opacity: 0.08; }
+    .big { font-size: 54px; font-weight: 700; fill: url(#title); letter-spacing: -1px; }
+    .unit { font-size: 24px; font-weight: 600; fill: #f472d0; }
+    .title { font-size: 26px; font-weight: 700; fill: url(#title); }
+    .cap { font-size: 17px; fill: #a1a1aa; }
+    .tick { fill: url(#ink); }
+  </style>
+  <g transform="translate(0.0 0)">
+    <rect class="tile" x="0.5" y="0.5" width="305.5" height="189" rx="22"/>
+    <rect fill="url(#glow)" x="0.5" y="0.5" width="305.5" height="189" rx="22"/>
+    <rect fill="url(#glow2)" x="0.5" y="0.5" width="305.5" height="189" rx="22"/>
+    <rect class="edge" x="0.5" y="0.5" width="305.5" height="189" rx="22"/>
+    <rect class="tick" x="32" y="36" width="36" height="5" rx="2.5"/>
+    <text x="32" y="112"><tspan class="big">256</tspan><tspan class="unit" dx="8">kbps</tspan></text>
+    <text class="cap" x="32" y="148">Opus, with YouTube Premium</text>
+  </g>
+  <g transform="translate(324.5 0)">
+    <rect class="tile" x="0.5" y="0.5" width="305.5" height="189" rx="22"/>
+    <rect fill="url(#glow)" x="0.5" y="0.5" width="305.5" height="189" rx="22"/>
+    <rect fill="url(#glow2)" x="0.5" y="0.5" width="305.5" height="189" rx="22"/>
+    <rect class="edge" x="0.5" y="0.5" width="305.5" height="189" rx="22"/>
+    <rect class="tick" x="32" y="36" width="36" height="5" rx="2.5"/>
+    <text x="32" y="112"><tspan class="big">10</tspan><tspan class="unit" dx="8">bands</tspan></text>
+    <text class="cap" x="32" y="148">of equaliser, ±12 dB each</text>
+  </g>
+  <g transform="translate(649.0 0)">
+    <rect class="tile" x="0.5" y="0.5" width="305.5" height="189" rx="22"/>
+    <rect fill="url(#glow)" x="0.5" y="0.5" width="305.5" height="189" rx="22"/>
+    <rect fill="url(#glow2)" x="0.5" y="0.5" width="305.5" height="189" rx="22"/>
+    <rect class="edge" x="0.5" y="0.5" width="305.5" height="189" rx="22"/>
+    <rect class="tick" x="32" y="36" width="36" height="5" rx="2.5"/>
+    <text x="32" y="112"><tspan class="big">9</tspan><tspan class="unit" dx="8">accents</tspan></text>
+    <text class="cap" x="32" y="148">in black, dark or light</text>
+  </g>
+  <g transform="translate(973.5 0)">
+    <rect class="tile" x="0.5" y="0.5" width="305.5" height="189" rx="22"/>
+    <rect fill="url(#glow)" x="0.5" y="0.5" width="305.5" height="189" rx="22"/>
+    <rect fill="url(#glow2)" x="0.5" y="0.5" width="305.5" height="189" rx="22"/>
+    <rect class="edge" x="0.5" y="0.5" width="305.5" height="189" rx="22"/>
+    <rect class="tick" x="32" y="36" width="36" height="5" rx="2.5"/>
+    <text x="32" y="112"><tspan class="big">0</tspan><tspan class="unit" dx="8">packages</tspan></text>
+    <text class="cap" x="32" y="148">just Swift and Apple's own</text>
+  </g>
+</svg>

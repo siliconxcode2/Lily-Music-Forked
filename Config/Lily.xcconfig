@@ -1,0 +1,6 @@
+// Build settings for the app target. Last.fm's API key and secret, as Lily for
+// Windows's LASTFM_API_KEY and LASTFM_API_SECRET, go in Secrets.xcconfig
+// beside this file, kept out of git; a build without it says Last.fm is unavailable.
+#include? "Secrets.xcconfig"
+
+PRODUCT_BUNDLE_IDENTIFIER = local.lily.ios

@@ -1,0 +1,83 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="300" viewBox="0 0 1280 300">
+  <title>The sound path: the stream, Opus or AAC up to 256 kbps, then volume levelling, gapless playback and crossfade, playback speed, the ten-band equaliser, crossfeed, mono and balance, and a limiter</title>
+  <defs>
+    <radialGradient id="glow" cx="50%" cy="100%" r="60%">
+      <stop offset="0" stop-color="#d65db1" stop-opacity="0.26"/>
+      <stop offset="0.5" stop-color="#d65db1" stop-opacity="0.06"/>
+      <stop offset="1" stop-color="#d65db1" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="title" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#ffffff"/>
+      <stop offset="1" stop-color="#f6c4ea"/>
+    </linearGradient>
+    <linearGradient id="ink" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#f472d0"/>
+      <stop offset="1" stop-color="#9b5cff"/>
+    </linearGradient>
+    <style>
+      text { font-family: -apple-system, 'SF Pro Display', system-ui, 'Segoe UI Variable Display', 'Segoe UI', Inter, 'Helvetica Neue', Arial, sans-serif; }
+      .h1 { font-size: 34px; font-weight: 700; fill: url(#title); }
+      .sub { font-size: 20px; fill: #9a9aa3; }
+      .box { fill: #ffffff; fill-opacity: 0.05; stroke: #ffffff; stroke-opacity: 0.12; }
+      .ends { fill: #d65db1; fill-opacity: 0.12; stroke: url(#ink); stroke-width: 1.5; }
+      .step { font-size: 15px; font-weight: 700; letter-spacing: 1.4px; fill: #d65db1; }
+      .name { font-size: 21px; font-weight: 700; fill: #f4f4f5; }
+      .note { font-size: 16px; fill: #9a9aa3; }
+      .arrow { fill: none; stroke: #6b6b76; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+    </style>
+  </defs>
+
+  <rect width="1280" height="300" rx="28" fill="#0c0a10"/>
+  <rect width="1280" height="300" rx="28" fill="url(#glow)"/>
+  <rect x="0.5" y="0.5" width="1279" height="299" rx="27.5" fill="none" stroke="#ffffff" stroke-opacity="0.08"/>
+
+  <text class="h1" x="56" y="72">From YouTube to your ears</text>
+  <text class="sub" x="56" y="102">Every step the sound takes, in the order you hear it</text>
+
+  <!-- In the order AudioGraph and SoundUnit run them. -->
+  <g transform="translate(0 136)" text-anchor="middle">
+    <rect class="ends" x="56" width="148" height="128" rx="16"/>
+    <text class="step" x="130" y="32">1</text>
+    <text class="name" x="130" y="60">Stream</text>
+    <text class="note" x="130" y="86">Opus or AAC,</text>
+    <text class="note" x="130" y="108">up to 256 kbps</text>
+
+    <rect class="box" x="226" width="148" height="128" rx="16"/>
+    <text class="step" x="300" y="32">2</text>
+    <text class="name" x="300" y="60">Levelling</text>
+    <text class="note" x="300" y="86">from YouTube's</text>
+    <text class="note" x="300" y="108">own loudness</text>
+
+    <rect class="box" x="396" width="148" height="128" rx="16"/>
+    <text class="step" x="470" y="32">3</text>
+    <text class="name" x="470" y="60">Crossfade</text>
+    <text class="note" x="470" y="86">gapless, or</text>
+    <text class="note" x="470" y="108">1 to 12 seconds</text>
+
+    <rect class="box" x="566" width="148" height="128" rx="16"/>
+    <text class="step" x="640" y="32">4</text>
+    <text class="name" x="640" y="60">Speed</text>
+    <text class="note" x="640" y="86">0.8× to 1.3×,</text>
+    <text class="note" x="640" y="108">when not 1×</text>
+
+    <rect class="box" x="736" width="148" height="128" rx="16"/>
+    <text class="step" x="810" y="32">5</text>
+    <text class="name" x="810" y="60">Equaliser</text>
+    <text class="note" x="810" y="86">ten bands,</text>
+    <text class="note" x="810" y="108">±12 dB each</text>
+
+    <rect class="box" x="906" width="148" height="128" rx="16"/>
+    <text class="step" x="980" y="32">6</text>
+    <text class="name" x="980" y="60">Headphones</text>
+    <text class="note" x="980" y="86">crossfeed, mono</text>
+    <text class="note" x="980" y="108">and balance</text>
+
+    <rect class="ends" x="1076" width="148" height="128" rx="16"/>
+    <text class="step" x="1150" y="32">7</text>
+    <text class="name" x="1150" y="60">Limiter</text>
+    <text class="note" x="1150" y="86">so nothing</text>
+    <text class="note" x="1150" y="108">ever clips</text>
+
+    <path class="arrow" d="M211 58 l5 6 l-5 6 M381 58 l5 6 l-5 6 M551 58 l5 6 l-5 6 M721 58 l5 6 l-5 6 M891 58 l5 6 l-5 6 M1061 58 l5 6 l-5 6"/>
+  </g>
+</svg>
