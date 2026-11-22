@@ -51,7 +51,15 @@ Branch: `ccr-97648d31-v30xzd`. Every change is checked by CI on GitHub's `xcode-
 19. String catalog for translation
 20. Dark, clear and tinted app icon check
 
-## Next: UI/UX, motion and touch (round 3)
+## Done: UI/UX, motion and touch (round 3)
+
+All built and checked by CI. Notes:
+- U4: header actions sit on glass so iOS 26 menus grow out of them; they stay in the header rather than the toolbar.
+- U5, U6: the Up Next / Lyrics switch is iOS's segmented control, and the mini player is the system accessory; both morph themselves.
+- U9: presses spring; iOS gives the long-press haptic itself.
+- U13: iOS's soft scroll edge is on by default; page tops hide it until the sticky title shows, as before.
+- U14: left to iOS's tab bar, which pops to the root and scrolls to the top on a second tap; check on a phone.
+- U18: not needed yet: system glass and sheets are concentric already, and no artwork sits inside a rounded container.
 
 ### Motion system
 - U1. Springs everywhere: `Theme.fast` and `Theme.normal` are ease-out curves; iOS 26 uses springs (`.snappy`, `.smooth`, `.bouncy`).
