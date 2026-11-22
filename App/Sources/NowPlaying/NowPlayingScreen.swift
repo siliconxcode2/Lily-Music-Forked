@@ -251,7 +251,7 @@ private struct NowPlayingTopBar: View {
 
     var body: some View {
         HStack {
-            IconButton(icon: .close, size: 40, iconSize: 22, colour: theme.text) { dismiss() }
+            IconButton(icon: .close, size: 44, iconSize: 22, colour: theme.text) { dismiss() }
                 .accessibilityLabel("Close")
             Spacer()
             Menu {
@@ -262,7 +262,7 @@ private struct NowPlayingTopBar: View {
                 TrackLinks(track: track)
             } label: {
                 IconView(icon: .more, size: 22, colour: theme.text)
-                    .frame(width: 40, height: 40)
+                    .frame(width: 44, height: 44)
                     .contentShape(Circle())
             }
             .accessibilityLabel("More")

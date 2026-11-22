@@ -60,7 +60,7 @@ private struct LyricsLines: View {
                 }
                 if !lyrics.source.isEmpty {
                     Text(lyrics.source)
-                        .font(.system(size: 12))
+                        .font(.caption)
                         .foregroundStyle(theme.textSecondary)
                 }
             }
@@ -145,7 +145,7 @@ private struct LyricLine: View {
 
     var body: some View {
         Text(text)
-            .font(.system(size: 22, weight: .bold))
+            .font(.title2.weight(.bold))
             .foregroundStyle(theme.text)
             .opacity(lit ? 1 : 0.5)
             .animation(Theme.normal, value: lit)

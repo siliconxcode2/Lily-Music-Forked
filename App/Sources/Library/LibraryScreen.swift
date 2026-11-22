@@ -30,10 +30,10 @@ private struct BringYourLibrary: View {
         ScrollView {
             VStack(alignment: .leading, spacing: 10) {
                 Text("Bring your library")
-                    .font(.system(size: 16, weight: .bold))
+                    .font(.callout.weight(.bold))
                     .foregroundStyle(theme.text)
                 Text("Sign in to see your playlists, albums and listening history here.")
-                    .font(.system(size: 13))
+                    .font(.footnote)
                     .foregroundStyle(theme.textSecondary)
                 PillButton(title: "Sign in", primary: true, small: true) { app.sheet = .signIn }
                     .padding(.top, 6)

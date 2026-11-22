@@ -37,13 +37,13 @@ struct GenreTile: View {
                     .offset(x: 12, y: 20)
                     .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .bottomTrailing)
                 Text(card.title)
-                    .font(.system(size: 20, weight: .bold))
+                    .font(.title3.weight(.bold))
                     .foregroundStyle(theme.onColour)
                     .multilineTextAlignment(.leading)
                     .padding(.horizontal, 16)
                     .padding(.top, 14)
             }
-            .frame(height: Metrics.chipHeight)
+            .frame(minHeight: Metrics.chipHeight)
             .clipShape(RoundedRectangle(cornerRadius: 8))
             .contentShape(RoundedRectangle(cornerRadius: 8))
         }

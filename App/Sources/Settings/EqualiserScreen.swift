@@ -95,6 +95,6 @@ private struct BandRow: View {
                 .foregroundStyle(enabled ? theme.text : theme.textDim)
                 .frame(width: 48, alignment: .trailing)
         }
-        .font(.system(size: 13))
+        .font(.footnote)
     }
 }

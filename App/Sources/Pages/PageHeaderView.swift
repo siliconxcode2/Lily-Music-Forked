@@ -150,20 +150,23 @@ private struct HeaderText: View {
     let foreground: Color
     let secondary: Color
 
+    /// The title's size follows its length, then grows with the reader's text size.
+    @ScaledMetric(relativeTo: .largeTitle) private var titleScale: CGFloat = 1
+
     var body: some View {
         VStack(alignment: .leading, spacing: 6) {
             if !header.label.isEmpty {
                 Text(header.label)
-                    .font(.system(size: 14, weight: .semibold))
+                    .font(.subheadline.weight(.semibold))
             }
             Text(header.title)
-                .font(.system(size: titleSize, weight: .heavy))
+                .font(.system(size: titleSize * titleScale, weight: .heavy))
                 .tracking(-0.5)
                 .lineLimit(2)
                 .minimumScaleFactor(0.7)
                 .accessibilityAddTraits(.isHeader)
             details
-                .font(.system(size: 14))
+                .font(.subheadline)
                 .lineLimit(2)
         }
         .foregroundStyle(foreground)

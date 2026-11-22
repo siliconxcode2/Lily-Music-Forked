@@ -47,7 +47,7 @@ struct SidePanel: View {
                     .accessibilityLabel("Close panel")
             }
         }
-        .frame(height: 48)
+        .frame(minHeight: 48)
         .padding(.leading, NowPlayingScreen.padding)
         .padding(.trailing, isBeside ? NowPlayingScreen.padding : NowPlayingScreen.padding - 8)
     }

@@ -100,7 +100,7 @@ private struct SpeedDialTile: View {
                 LinearGradient(colors: [.clear, .black.opacity(0.75)], startPoint: UnitPoint(x: 0.5, y: 0.5), endPoint: .bottom)
                 HStack(spacing: 2) {
                     Text(card.title)
-                        .font(.system(size: 15, weight: .bold))
+                        .font(.subheadline.weight(.bold))
                         .foregroundStyle(theme.onColour)
                         .lineLimit(1)
                         .frame(maxWidth: .infinity, alignment: .leading)

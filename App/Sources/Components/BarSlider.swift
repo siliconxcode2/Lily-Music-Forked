@@ -20,7 +20,7 @@ struct BarSlider: View {
     /// the bar takes the touch over, which never ends the drag.
     @GestureState private var touching = false
 
-    private static let touchHeight: CGFloat = 32
+    private static let touchHeight: CGFloat = 44
     private static let barHeight: CGFloat = 4
     private static let knob: CGFloat = 12
     /// One swipe of VoiceOver's adjust.

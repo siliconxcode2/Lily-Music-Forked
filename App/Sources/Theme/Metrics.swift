@@ -13,7 +13,7 @@ nonisolated enum Metrics {
     static let rowSpacing: CGFloat = 12
     static let rowArt: CGFloat = 40
     static let rowNumber: CGFloat = 24
-    static let rowMore: CGFloat = 28
+    static let rowMore: CGFloat = 44
     static let rowDuration: CGFloat = 44
 
     static let titleHeight: CGFloat = 68

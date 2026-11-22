@@ -29,7 +29,7 @@ struct CardView: View {
                 )
                     .padding(.bottom, 4)
                 Text(card.title)
-                    .font(.system(size: 15, weight: .semibold))
+                    .font(.subheadline.weight(.semibold))
                     .foregroundStyle(theme.text)
                 HStack(spacing: 4) {
                     // Read only where pins show, so other cards never redraw for them.
@@ -38,7 +38,7 @@ struct CardView: View {
                             .accessibilityLabel("Pinned")
                     }
                     Text(card.subtitle)
-                        .font(.system(size: 13))
+                        .font(.footnote)
                         .foregroundStyle(theme.textSecondary)
                 }
             }

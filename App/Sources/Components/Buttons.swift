@@ -1,20 +1,27 @@
 import SwiftUI
 
+/// A symbol in a `size`-point square. A symbol drawn at a font size fills about
+/// four fifths of it, as the old 24-point icons filled their grid.
 struct IconView: View {
     let icon: Icon
     var size: CGFloat = 24
     let colour: Color
 
     var body: some View {
-        IconShape(icon: icon)
-            .fill(colour)
+        Image(icon: icon)
+            .font(.system(size: size * 0.8))
+            .foregroundStyle(colour)
+            .contentTransition(.symbolEffect(.replace))
             .frame(width: size, height: size)
     }
 }
 
+/// Never laid out smaller than 44 points, the least HIG allows a finger.
 struct IconButton: View {
+    static let minimum: CGFloat = 44
+
     let icon: Icon
-    var size: CGFloat = 32
+    var size: CGFloat = 44
     var iconSize: CGFloat = 18
     var active = false
     /// The theme's secondary text when nil.
@@ -23,11 +30,14 @@ struct IconButton: View {
 
     @Environment(\.theme) private var theme
     @Environment(\.isEnabled) private var isEnabled
+    /// The symbol grows with the reader's text size, as far as half again.
+    @ScaledMetric(relativeTo: .body) private var textScale: CGFloat = 1
 
     var body: some View {
+        let edge = max(size, Self.minimum)
         Button(action: action) {
             ZStack {
-                IconView(icon: icon, size: iconSize, colour: iconColour)
+                IconView(icon: icon, size: iconSize * min(textScale, 1.5), colour: iconColour)
                 if active {
                     Circle()
                         .fill(theme.accent)
@@ -35,7 +45,7 @@ struct IconButton: View {
                         .offset(y: iconSize / 2 + 4)
                 }
             }
-            .frame(width: size, height: size)
+            .frame(width: edge, height: edge)
             .contentShape(Circle())
         }
         .buttonStyle(PressScale(scale: 0.88, animation: .easeOut(duration: 0.09)))
@@ -81,6 +91,9 @@ struct PillButton: View {
     var body: some View {
         Button(action: action) {
             PillLabel(title: title, primary: primary, small: small)
+                // Taller to touch than to see.
+                .padding(.vertical, small ? 6 : 2)
+                .contentShape(Rectangle())
         }
         .buttonStyle(PressScale(scale: 0.96))
     }
@@ -97,13 +110,13 @@ struct PillLabel: View {
 
     var body: some View {
         Text(title)
-            .font(.system(size: small ? 13 : 14, weight: .bold))
+            .font((small ? Font.footnote : .subheadline).weight(.bold))
             .foregroundStyle(primary ? theme.textInverse : theme.text)
             // A pill is one line: a row squeezes its description instead.
             .lineLimit(1)
             .fixedSize()
             .padding(.horizontal, small ? 16 : 24)
-            .frame(height: small ? 32 : 40)
+            .frame(minHeight: small ? 32 : 40)
             .background {
                 if primary {
                     Capsule().fill(theme.text)
@@ -127,13 +140,15 @@ struct Pill: View {
     var body: some View {
         Button(action: action) {
             Text(title)
-                .font(.system(size: compact ? 13 : 14, weight: .semibold))
+                .font((compact ? Font.footnote : .subheadline).weight(.semibold))
                 .foregroundStyle(active ? theme.textInverse : theme.text)
                 .lineLimit(1)
                 .padding(.horizontal, compact ? 10 : 14)
-                .frame(height: 32)
+                .frame(minHeight: 32)
                 .background(Capsule().fill(active ? theme.text : theme.hover))
-                .contentShape(Capsule())
+                // Taller to touch than to see, so the row stays slim.
+                .padding(.vertical, 6)
+                .contentShape(Rectangle())
         }
         .buttonStyle(PressScale(scale: 0.96))
         .accessibilityAddTraits(active ? .isSelected : [])

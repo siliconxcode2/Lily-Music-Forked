@@ -42,7 +42,7 @@ struct PlaylistPickerSheet: View {
         if !app.isSignedIn {
             VStack(spacing: 20) {
                 Text("Sign in to save songs to your playlists.")
-                    .font(.system(size: 15))
+                    .font(.subheadline)
                     .foregroundStyle(theme.textSecondary)
                     .multilineTextAlignment(.center)
                 PillButton(title: "Sign in", primary: true) { app.sheet = .signIn }
@@ -57,7 +57,7 @@ struct PlaylistPickerSheet: View {
                     }
                     if playlists.isEmpty {
                         Text("You have no playlists of your own yet.")
-                            .font(.system(size: 14))
+                            .font(.subheadline)
                             .foregroundStyle(theme.textSecondary)
                             .padding(12)
                     }
@@ -85,7 +85,7 @@ struct PlaylistPickerSheet: View {
                     IconView(icon: .add, size: 20, colour: theme.text)
                 }
                 Text(title)
-                    .font(.system(size: 14, weight: new ? .semibold : .regular))
+                    .font(.subheadline.weight(new ? .semibold : .regular))
                     .foregroundStyle(theme.text)
                     .lineLimit(1)
                     .frame(maxWidth: .infinity, alignment: .leading)
@@ -95,7 +95,7 @@ struct PlaylistPickerSheet: View {
                 }
             }
             .padding(.horizontal, 12)
-            .frame(height: Self.rowHeight)
+            .frame(minHeight: Self.rowHeight)
             .contentShape(Rectangle())
         }
         .buttonStyle(RowPress())

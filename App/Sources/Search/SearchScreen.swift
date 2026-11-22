@@ -102,7 +102,7 @@ private struct SearchChoices: View {
                         HStack(spacing: 14) {
                             IconView(icon: recent ? .history : .search, size: 18, colour: theme.textSecondary)
                             Text(choice)
-                                .font(.system(size: 15))
+                                .font(.subheadline)
                                 .foregroundStyle(theme.text)
                                 .lineLimit(1)
                                 .frame(maxWidth: .infinity, alignment: .leading)
@@ -133,7 +133,7 @@ private struct SearchPrompt: View {
         VStack(spacing: 16) {
             IconView(icon: .search, size: 48, colour: theme.textDim)
             Text("What do you want to play?")
-                .font(.system(size: 18, weight: .semibold))
+                .font(.title3.weight(.semibold))
                 .foregroundStyle(theme.textSecondary)
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)

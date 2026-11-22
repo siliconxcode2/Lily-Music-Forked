@@ -11,7 +11,7 @@ struct ToastView: View {
                     // A petal of the icon's gradient.
                     RoundedRectangle(cornerRadius: 2).fill(Theme.lilyGradient).frame(width: 4)
                     Text(toast.message)
-                        .font(.system(size: 14, weight: .semibold))
+                        .font(.subheadline.weight(.semibold))
                         .foregroundStyle(theme.text)
                 }
                 // Keeps the petal as tall as the text rather than the screen.

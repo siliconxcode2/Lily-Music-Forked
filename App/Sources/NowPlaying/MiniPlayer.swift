@@ -24,10 +24,10 @@ struct MiniPlayer: View {
                 ArtworkView(url: track.thumbnail, size: Self.art, radius: 8)
                 VStack(alignment: .leading, spacing: 2) {
                     Text(track.title)
-                        .font(.system(size: 15, weight: .semibold))
+                        .font(.subheadline.weight(.semibold))
                         .foregroundStyle(theme.text)
                     Text(track.artistNames)
-                        .font(.system(size: 13))
+                        .font(.footnote)
                         .foregroundStyle(theme.textSecondary)
                 }
                 .lineLimit(1)
@@ -39,6 +39,8 @@ struct MiniPlayer: View {
             .padding(.leading, 10)
             .padding(.trailing, 8)
             .frame(height: Self.height)
+            // As tall as the tab bar always, so its text stops growing where the bar's would.
+            .dynamicTypeSize(...DynamicTypeSize.xxLarge)
             // Inside the capsule, clear of its rounded ends.
             .overlay(alignment: .bottom) {
                 MiniProgress()

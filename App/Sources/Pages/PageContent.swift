@@ -224,11 +224,11 @@ private struct Greeting: View {
 
     var body: some View {
         Text(Self.greeting(hour: Calendar.current.component(.hour, from: .now)))
-            .font(.system(size: 32, weight: .heavy))
+            .font(.largeTitle.weight(.heavy))
             .foregroundStyle(theme.text)
             .accessibilityAddTraits(.isHeader)
             .padding(.horizontal, Metrics.pagePadding)
-            .frame(height: Metrics.greetingHeight, alignment: .bottom)
+            .frame(minHeight: Metrics.greetingHeight, alignment: .bottom)
     }
 
     private static func greeting(hour: Int) -> String {
@@ -283,7 +283,7 @@ private struct StickyTitle: View {
                 PlayButton(size: 30, action: play)
             }
             Text(title)
-                .font(.system(size: 17, weight: .heavy))
+                .font(.body.weight(.heavy))
                 .foregroundStyle(theme.text)
                 .lineLimit(1)
         }

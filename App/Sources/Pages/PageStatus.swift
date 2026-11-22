@@ -51,7 +51,7 @@ struct PageStatus: View {
 
         var body: some View {
             Text(text)
-                .font(.system(size: 18, weight: .semibold))
+                .font(.title3.weight(.semibold))
                 .foregroundStyle(theme.text)
                 .multilineTextAlignment(.center)
         }

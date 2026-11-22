@@ -24,7 +24,7 @@ struct QueueRow: View {
                 }
             VStack(alignment: .leading, spacing: 2) {
                 Text(track.title)
-                    .font(.system(size: 14, weight: current ? .bold : .medium))
+                    .font(.subheadline.weight(current ? .bold : .medium))
                     .foregroundStyle(theme.text)
                 HStack(spacing: 4) {
                     if recommended {
@@ -32,18 +32,20 @@ struct QueueRow: View {
                             .accessibilityLabel("Smart Shuffle pick")
                     }
                     Text(track.artistNames)
-                        .font(.system(size: 13))
+                        .font(.footnote)
                         .foregroundStyle(theme.textSecondary)
                 }
             }
             .lineLimit(1)
             .frame(maxWidth: .infinity, alignment: .leading)
             Text(track.duration.map(Formatting.duration) ?? "")
-                .font(.system(size: 13).monospacedDigit())
+                .font(.footnote.monospacedDigit())
                 .foregroundStyle(theme.textSecondary)
         }
         .padding(.horizontal, 8)
         .frame(height: Theme.queueRow)
+        // Every row stays one height for dragging, so the text stops growing where it would no longer fit.
+        .dynamicTypeSize(...DynamicTypeSize.xxLarge)
         .contentShape(Rectangle())
         .accessibilityElement(children: .combine)
         .accessibilityAddTraits(current ? .isSelected : [])

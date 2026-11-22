@@ -33,7 +33,7 @@ struct Scrubber: View {
                     Spacer()
                     Text(total)
                 }
-                .font(.system(size: 12).monospacedDigit())
+                .font(.caption.monospacedDigit())
                 .foregroundStyle(theme.textSecondary)
                 .accessibilityHidden(true)
             }

@@ -51,25 +51,25 @@ nonisolated struct Theme: Equatable, Sendable {
     /// Behind Home, a dark take on the accent; Lily's orchid gives #4d2140.
     private let homeTint: RGB
 
+    /// The surfaces and text are iOS's own adaptive colours, so they match the
+    /// system's bars, sheets and glass; the colour scheme the look sets picks
+    /// their light or dark take. Black is iOS's own dark; Dark sits a step up from it.
     init(look: Look, accent: RGB) {
-        let light = look == .light
-        let black = look == .black
-        func pick(_ lightHex: UInt32, _ blackHex: UInt32, _ darkHex: UInt32) -> Color {
-            Color(rgb: RGB(hex: light ? lightHex : black ? blackHex : darkHex))
-        }
+        let dark = look == .dark
+        func system(_ colour: UIColor) -> Color { Color(uiColor: colour) }
         self.look = look
         self.accent = Color(rgb: accent)
-        panel = pick(0xffffff, 0x000000, 0x121212)
-        elevated = pick(0xf0f0f0, 0x141414, 0x1f1f1f)
-        highlight = pick(0xe0e0e0, 0x222222, 0x2a2a2a)
-        menu = pick(0xffffff, 0x1a1a1a, 0x282828)
-        ink = Color(rgb: light ? .black : .white)
-        hover = ink.opacity(0.08)
-        divider = ink.opacity(0.1)
-        text = Color(rgb: RGB(hex: light ? 0x0f0f0f : 0xffffff))
-        textSecondary = Color(rgb: RGB(hex: light ? 0x5c5c5c : 0xb3b3b3))
-        textDim = Color(rgb: RGB(hex: light ? 0x8a8a8a : 0x7a7a7a))
-        textInverse = Color(rgb: light ? .white : .black)
+        panel = system(dark ? .secondarySystemBackground : .systemBackground)
+        elevated = system(dark ? .tertiarySystemBackground : .secondarySystemBackground)
+        highlight = system(dark ? .systemGray4 : .systemGray5)
+        menu = system(look == .light ? .systemBackground : dark ? .tertiarySystemBackground : .secondarySystemBackground)
+        ink = Color(rgb: look == .light ? .black : .white)
+        hover = system(.tertiarySystemFill)
+        divider = system(.separator)
+        text = system(.label)
+        textSecondary = system(.secondaryLabel)
+        textDim = system(.tertiaryLabel)
+        textInverse = system(.systemBackground)
         homeTint = accent.mixed(with: .black, weight: 0.36)
     }
 

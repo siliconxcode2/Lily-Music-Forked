@@ -11,7 +11,7 @@ struct SectionHeader: View {
     var body: some View {
         HStack(alignment: .firstTextBaseline) {
             Text(title)
-                .font(.system(size: 24, weight: .heavy))
+                .font(.title2.weight(.heavy))
                 .foregroundStyle(theme.text)
                 .lineLimit(1)
                 .frame(maxWidth: .infinity, alignment: .leading)

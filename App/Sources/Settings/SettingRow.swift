@@ -18,7 +18,7 @@ struct SettingRow<Control: View>: View {
         layout {
             VStack(alignment: .leading, spacing: 2) {
                 Text(label)
-                    .font(.system(size: 15, weight: .semibold))
+                    .font(.subheadline.weight(.semibold))
                     .foregroundStyle(theme.text)
                 if !detail.isEmpty {
                     // One cell for both, so it is as tall as the taller.
@@ -27,7 +27,7 @@ struct SettingRow<Control: View>: View {
                         Text(detail)
                             .foregroundStyle(theme.textSecondary)
                     }
-                    .font(.system(size: 13))
+                    .font(.footnote)
                     .fixedSize(horizontal: false, vertical: true)
                 }
             }

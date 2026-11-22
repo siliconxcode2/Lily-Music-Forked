@@ -21,7 +21,7 @@ struct TrackRow: View {
                         PlayingEqualizer()
                     } else {
                         Text(number, format: .number.grouping(.never))
-                            .font(.system(size: 15))
+                            .font(.subheadline)
                             .foregroundStyle(theme.textSecondary)
                             .lineLimit(1)
                             .minimumScaleFactor(0.6)
@@ -35,12 +35,12 @@ struct TrackRow: View {
 
                 VStack(alignment: .leading, spacing: 2) {
                     Text(track.title)
-                        .font(.system(size: 15, weight: .medium))
+                        .font(.subheadline.weight(.medium))
                         .foregroundStyle(playing ? theme.accent : theme.text)
                     HStack(spacing: 4) {
                         DownloadBadge(videoId: track.id)
                         Text(track.artistNames)
-                            .font(.system(size: 13))
+                            .font(.footnote)
                             .foregroundStyle(theme.textSecondary)
                     }
                 }
@@ -52,14 +52,15 @@ struct TrackRow: View {
                     Color.clear.frame(width: Metrics.rowMore)
                     if let length {
                         Text(length)
-                            .font(.system(size: 14).monospacedDigit())
+                            .font(.subheadline.monospacedDigit())
                             .foregroundStyle(theme.textSecondary)
                             .frame(width: Metrics.rowDuration, alignment: .trailing)
                     }
                 }
             }
             .padding(.horizontal, Metrics.rowPadding)
-            .frame(height: Metrics.rowHeight)
+            .padding(.vertical, 4)
+            .frame(minHeight: Metrics.rowHeight)
             .contentShape(Rectangle())
         }
         .buttonStyle(RowPress())
@@ -68,7 +69,8 @@ struct TrackRow: View {
                 TrackMenu(track: track)
             } label: {
                 IconView(icon: .more, size: 20, colour: theme.textSecondary)
-                    .frame(width: Metrics.rowMore, height: Metrics.rowHeight)
+                    .frame(width: Metrics.rowMore)
+                    .frame(maxHeight: .infinity)
                     .contentShape(Rectangle())
             }
             .accessibilityLabel("More")
@@ -101,7 +103,7 @@ struct TrackColumns: View {
             IconView(icon: .clock, size: 16, colour: theme.textSecondary)
                 .frame(width: Metrics.rowDuration, alignment: .trailing)
         }
-        .font(.system(size: 14))
+        .font(.subheadline)
         .foregroundStyle(theme.textSecondary)
         .padding(.horizontal, Metrics.rowPadding)
         .frame(height: Metrics.columnsHeight)

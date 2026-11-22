@@ -15,14 +15,14 @@ struct ProxyRow: View {
         SettingRow(label: "Proxy", detail: failure.isEmpty ? detail : failure, detailRoom: detail, stacked: true) {
             HStack(spacing: 12) {
                 TextField("Proxy address", text: $text, prompt: Text(saved?.address ?? "http://host:port").foregroundStyle(theme.textDim))
-                    .font(.system(size: 13))
+                    .font(.footnote)
                     .foregroundStyle(theme.text)
                     .keyboardType(.URL)
                     .textInputAutocapitalization(.never)
                     .autocorrectionDisabled()
                     .submitLabel(.done)
                     .padding(.horizontal, 14)
-                    .frame(height: 32)
+                    .frame(minHeight: 44)
                     .background(Capsule().strokeBorder(theme.ink.opacity(0.44), lineWidth: 1))
                     // A mistyped address stays to be corrected. Done on an empty field only puts the keyboard
                     // away, as the field looks filled in by the saved address: clearing is the Clear button's.
