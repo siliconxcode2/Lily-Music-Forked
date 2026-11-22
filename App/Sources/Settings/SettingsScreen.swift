@@ -21,7 +21,6 @@ struct SettingsScreen: View {
                 .padding(.horizontal, 20)
                 .padding(.vertical, 12)
             }
-            .background(theme.menu)
             .navigationTitle("Settings")
             .navigationDestination(for: SettingsPage.self) { page in
                 switch page {

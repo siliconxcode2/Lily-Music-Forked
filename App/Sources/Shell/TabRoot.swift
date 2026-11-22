@@ -1,8 +1,8 @@
 import SwiftUI
 import YTMCore
 
-/// The mini player is the app's own since the tab bar accessory is too short to
-/// reach comfortably; each tab has one, so the zoom sources never share an ID.
+/// Before iOS 26.1 each tab floats its own mini player, so the zoom sources
+/// never share an ID; from then on the tab bar's accessory is the one mini player.
 struct TabRoot<Content: View>: View {
     let tab: AppTab
     let transition: Namespace.ID
@@ -34,13 +34,16 @@ struct TabRoot<Content: View>: View {
         .overlay(alignment: .bottom) { ToastView() }
         // Keeps the toast clear of the capsule; the pages keep their own room (`MiniPlayerRoom`).
         .safeAreaInset(edge: .bottom) {
-            MiniPlayer(tab: tab, transition: transition)
+            if !MiniPlayerAccessory.isAvailable {
+                FloatingMiniPlayer(tab: tab, transition: transition)
+            }
         }
     }
 }
 
 /// The stack's inset doesn't reach the pages' scroll views, so each page keeps
-/// the mini player's room itself, or its last rows sit under it out of reach.
+/// the floating mini player's room itself, or its last rows sit under it out of
+/// reach. The accessory's room iOS keeps itself.
 private struct MiniPlayerRoom: ViewModifier {
     let tab: AppTab
 
@@ -48,7 +51,8 @@ private struct MiniPlayerRoom: ViewModifier {
 
     func body(content: Content) -> some View {
         content.safeAreaInset(edge: .bottom, spacing: 0) {
-            Color.clear.frame(height: MiniPlayer.shown(on: tab, in: app) ? MiniPlayer.room : 0)
+            let floating = !MiniPlayerAccessory.isAvailable && MiniPlayer.shown(on: tab, in: app)
+            Color.clear.frame(height: floating ? FloatingMiniPlayer.room : 0)
         }
     }
 }

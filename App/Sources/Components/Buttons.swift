@@ -26,6 +26,8 @@ struct IconButton: View {
     var active = false
     /// The theme's secondary text when nil.
     var colour: Color?
+    /// On a clear glass circle, for buttons that float over content rather than sit in a bar.
+    var glass = false
     let action: () -> Void
 
     @Environment(\.theme) private var theme
@@ -47,6 +49,7 @@ struct IconButton: View {
             }
             .frame(width: edge, height: edge)
             .contentShape(Circle())
+            .glassEffect(glass ? .regular.interactive() : .identity, in: Circle())
         }
         .buttonStyle(PressScale(scale: 0.88, animation: .easeOut(duration: 0.09)))
         .accessibilityAddTraits(active ? .isSelected : [])
@@ -58,6 +61,7 @@ struct IconButton: View {
     }
 }
 
+/// A circle of glass tinted the accent, as iOS's prominent glass buttons are.
 struct PlayButton: View {
     var size: CGFloat = 56
     var playing = false
@@ -69,37 +73,49 @@ struct PlayButton: View {
 
     var body: some View {
         Button(action: action) {
-            Circle()
-                .fill(colour ?? theme.accent)
-                .shadow(color: theme.shadow, radius: 6, y: 4)
-                .overlay {
-                    IconView(icon: playing ? .pause : .play, size: size * 0.48, colour: iconColour ?? theme.onColour)
-                }
+            IconView(icon: playing ? .pause : .play, size: size * 0.48, colour: iconColour ?? theme.onColour)
                 .frame(width: size, height: size)
+                .contentShape(Circle())
+                .glassEffect(.regular.tint(colour ?? theme.accent).interactive(), in: Circle())
         }
         .buttonStyle(PressScale(scale: 0.95))
         .accessibilityLabel(playing ? "Pause" : "Play")
     }
 }
 
+/// iOS's own glass button: prominent, in the accent, for the one thing a screen
+/// is for; clear glass for the rest.
 struct PillButton: View {
     let title: String
     var primary = false
     var small = false
     let action: () -> Void
 
+    @Environment(\.theme) private var theme
+
     var body: some View {
-        Button(action: action) {
-            PillLabel(title: title, primary: primary, small: small)
-                // Taller to touch than to see.
-                .padding(.vertical, small ? 6 : 2)
-                .contentShape(Rectangle())
+        if primary {
+            button(foreground: theme.onColour).buttonStyle(.glassProminent)
+        } else {
+            button(foreground: theme.text).buttonStyle(.glass)
         }
-        .buttonStyle(PressScale(scale: 0.96))
+    }
+
+    private func button(foreground: Color) -> some View {
+        Button(action: action) {
+            Text(title)
+                .font((small ? Font.footnote : .subheadline).weight(.semibold))
+                .foregroundStyle(foreground)
+                // A pill is one line: a row squeezes its description instead.
+                .lineLimit(1)
+                .fixedSize()
+        }
+        .controlSize(small ? .small : .regular)
+        .buttonBorderShape(.capsule)
     }
 }
 
-/// A `PillButton`'s look, for links and menus that open something rather than act.
+/// A `PillButton`'s look, for menus and links that open something rather than act.
 struct PillLabel: View {
     let title: String
     var primary = false
@@ -110,20 +126,13 @@ struct PillLabel: View {
 
     var body: some View {
         Text(title)
-            .font((small ? Font.footnote : .subheadline).weight(.bold))
-            .foregroundStyle(primary ? theme.textInverse : theme.text)
-            // A pill is one line: a row squeezes its description instead.
+            .font((small ? Font.footnote : .subheadline).weight(.semibold))
+            .foregroundStyle(primary ? theme.onColour : theme.text)
             .lineLimit(1)
             .fixedSize()
-            .padding(.horizontal, small ? 16 : 24)
+            .padding(.horizontal, small ? 14 : 20)
             .frame(minHeight: small ? 32 : 40)
-            .background {
-                if primary {
-                    Capsule().fill(theme.text)
-                } else {
-                    Capsule().strokeBorder(theme.ink.opacity(0.44), lineWidth: 1)
-                }
-            }
+            .glassEffect(primary ? .regular.tint(theme.accent).interactive() : .regular.interactive(), in: Capsule())
             .contentShape(Capsule())
             .opacity(isEnabled ? 1 : 0.4)
     }
@@ -145,7 +154,7 @@ struct Pill: View {
                 .lineLimit(1)
                 .padding(.horizontal, compact ? 10 : 14)
                 .frame(minHeight: 32)
-                .background(Capsule().fill(active ? theme.text : theme.hover))
+                .glassEffect(active ? .regular.tint(theme.text).interactive() : .regular.interactive(), in: Capsule())
                 // Taller to touch than to see, so the row stays slim.
                 .padding(.vertical, 6)
                 .contentShape(Rectangle())
@@ -178,10 +187,13 @@ struct PillGroup: View {
         }
     }
 
+    /// In one glass container, so the pills blend as glass beside glass does.
     private func pills(compact: Bool) -> some View {
-        HStack(spacing: compact ? 4 : 6) {
-            ForEach(titles.indices, id: \.self) { index in
-                Pill(title: titles[index], active: selection == index, compact: compact) { selection = index }
+        GlassEffectContainer(spacing: compact ? 4 : 6) {
+            HStack(spacing: compact ? 4 : 6) {
+                ForEach(titles.indices, id: \.self) { index in
+                    Pill(title: titles[index], active: selection == index, compact: compact) { selection = index }
+                }
             }
         }
     }

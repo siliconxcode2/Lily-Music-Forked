@@ -251,7 +251,7 @@ private struct NowPlayingTopBar: View {
 
     var body: some View {
         HStack {
-            IconButton(icon: .close, size: 44, iconSize: 22, colour: theme.text) { dismiss() }
+            IconButton(icon: .close, size: 44, iconSize: 20, colour: theme.text, glass: true) { dismiss() }
                 .accessibilityLabel("Close")
             Spacer()
             Menu {
@@ -264,6 +264,7 @@ private struct NowPlayingTopBar: View {
                 IconView(icon: .more, size: 22, colour: theme.text)
                     .frame(width: 44, height: 44)
                     .contentShape(Circle())
+                    .glassEffect(.regular.interactive(), in: Circle())
             }
             .accessibilityLabel("More")
         }

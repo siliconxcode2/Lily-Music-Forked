@@ -18,12 +18,7 @@ struct ToastView: View {
                 .fixedSize(horizontal: false, vertical: true)
                 .padding(12)
                 .padding(.trailing, 6)
-                .background {
-                    RoundedRectangle(cornerRadius: 12)
-                        .fill(theme.menu)
-                        .strokeBorder(theme.divider)
-                        .shadow(color: theme.shadow, radius: 12, y: 8)
-                }
+                .glassEffect(.regular, in: .rect(cornerRadius: 20))
                 .frame(maxWidth: 480)
                 .padding(.horizontal, 32)
                 .padding(.bottom, 16)

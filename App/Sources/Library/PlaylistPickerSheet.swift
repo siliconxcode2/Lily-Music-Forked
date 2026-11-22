@@ -17,7 +17,6 @@ struct PlaylistPickerSheet: View {
         NavigationStack {
             content
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
-                .background(theme.menu)
                 .navigationTitle("Save to playlist")
                 .navigationBarTitleDisplayMode(.inline)
                 .toolbar {

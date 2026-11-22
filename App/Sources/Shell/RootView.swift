@@ -32,6 +32,9 @@ struct RootView: View {
                 TabRoot(tab: .search, transition: transition) { SearchScreen() }
             }
         }
+        // The bar shrinks as a page scrolls down, giving the page the screen, and the mini player moves in beside it.
+        .tabBarMinimizeBehavior(.onScrollDown)
+        .modifier(MiniPlayerAccessory(transition: transition))
         .sheet(item: presented { $0 != .nowPlaying }) { sheet in
             SheetContent(sheet: sheet, transition: transition)
         }
@@ -95,7 +98,7 @@ private struct SheetContent: View {
             switch sheet {
             case .nowPlaying:
                 NowPlayingScreen()
-                    .navigationTransition(.zoom(sourceID: app.tab, in: transition))
+                    .navigationTransition(.zoom(sourceID: MiniPlayerAccessory.zoomSource(tab: app.tab), in: transition))
             case .settings:
                 SettingsScreen()
             case .signIn:

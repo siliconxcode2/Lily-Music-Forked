@@ -1,10 +1,49 @@
 import SwiftUI
 import YTMCore
 
-/// As tall as the tab bar it sits above, so its controls are easy to reach.
-struct MiniPlayer: View {
+/// From iOS 26.1 the mini player is the tab bar's own accessory, which iOS draws
+/// in glass and tucks in beside the tab bar as it shrinks on a scroll. Before
+/// that it floats in a glass capsule of its own over each tab (`FloatingMiniPlayer`).
+struct MiniPlayerAccessory: ViewModifier {
+    let transition: Namespace.ID
+
+    @Environment(AppModel.self) private var app
+
+    static var isAvailable: Bool {
+        if #available(iOS 26.1, *) { true } else { false }
+    }
+
+    /// What Now Playing zooms out of: the one accessory, or the tab's own capsule.
+    static func zoomSource(tab: AppTab) -> AnyHashable {
+        isAvailable ? AnyHashable("mini player") : AnyHashable(tab)
+    }
+
+    func body(content: Content) -> some View {
+        if #available(iOS 26.1, *) {
+            content.tabViewBottomAccessory(isEnabled: MiniPlayer.shown(on: app.tab, in: app)) {
+                AccessoryMiniPlayer(transition: transition)
+            }
+        } else {
+            content
+        }
+    }
+}
+
+private struct AccessoryMiniPlayer: View {
+    let transition: Namespace.ID
+
+    @Environment(\.tabViewBottomAccessoryPlacement) private var placement
+
+    var body: some View {
+        MiniPlayer(compact: placement == .inline)
+            .padding(.horizontal, 6)
+            .matchedTransitionSource(id: MiniPlayerAccessory.zoomSource(tab: .home), in: transition)
+    }
+}
+
+/// Before iOS 26.1: a glass capsule over the tab bar, as tall as it, so its controls are easy to reach.
+struct FloatingMiniPlayer: View {
     private static let height: CGFloat = 64
-    private static let art: CGFloat = 44
     /// The tab bar's own margins, so the two line up.
     private static let margin: CGFloat = 20
     private static let bottomGap: CGFloat = 8
@@ -16,52 +55,88 @@ struct MiniPlayer: View {
     let transition: Namespace.ID
 
     @Environment(AppModel.self) private var app
+
+    var body: some View {
+        if MiniPlayer.shown(on: tab, in: app) {
+            MiniPlayer(compact: false)
+                .padding(.leading, 10)
+                .padding(.trailing, 8)
+                .frame(height: Self.height)
+                // Inside the capsule, clear of its rounded ends.
+                .overlay(alignment: .bottom) {
+                    MiniProgress()
+                        .padding(.horizontal, 28)
+                        .padding(.bottom, 4)
+                }
+                .glassEffect(.regular.interactive(), in: Capsule())
+                // Shaped as the capsule, so Now Playing shrinks into its rounded
+                // ends rather than a rectangle they replace on the last frame.
+                .matchedTransitionSource(id: MiniPlayerAccessory.zoomSource(tab: tab), in: transition) {
+                    $0.clipShape(.rect(cornerRadius: Self.height / 2))
+                }
+                .padding(.horizontal, Self.margin)
+                .padding(.bottom, Self.bottomGap)
+        }
+    }
+}
+
+/// The song playing, play and next; a tap opens Now Playing. Next is left out
+/// when `compact`, as the accessory is beside the shrunken tab bar.
+struct MiniPlayer: View {
+    let compact: Bool
+
+    @Environment(AppModel.self) private var app
     @Environment(\.theme) private var theme
 
     var body: some View {
-        if let track = app.player.current, Self.shown(on: tab, in: app) {
-            HStack(spacing: 12) {
-                ArtworkView(url: track.thumbnail, size: Self.art, radius: 8)
-                VStack(alignment: .leading, spacing: 2) {
+        if let track = app.player.current {
+            HStack(spacing: 10) {
+                ArtworkView(url: track.thumbnail, size: compact ? 28 : 40, radius: 6)
+                VStack(alignment: .leading, spacing: 0) {
                     Text(track.title)
                         .font(.subheadline.weight(.semibold))
                         .foregroundStyle(theme.text)
-                    Text(track.artistNames)
-                        .font(.footnote)
-                        .foregroundStyle(theme.textSecondary)
+                    if !compact {
+                        Text(track.artistNames)
+                            .font(.footnote)
+                            .foregroundStyle(theme.textSecondary)
+                    }
                 }
                 .lineLimit(1)
                 .frame(maxWidth: .infinity, alignment: .leading)
-                PlayPauseButton(size: 42)
-                IconButton(icon: .next, size: 44, iconSize: 26, colour: theme.text) { app.player.next() }
-                    .accessibilityLabel("Next")
+                MiniPlayPause()
+                if !compact {
+                    IconButton(icon: .next, iconSize: 22, colour: theme.text) { app.player.next() }
+                        .accessibilityLabel("Next")
+                }
             }
-            .padding(.leading, 10)
-            .padding(.trailing, 8)
-            .frame(height: Self.height)
-            // As tall as the tab bar always, so its text stops growing where the bar's would.
+            // As tall as the bar it sits in always, so its text stops growing where the bar's would.
             .dynamicTypeSize(...DynamicTypeSize.xxLarge)
-            // Inside the capsule, clear of its rounded ends.
-            .overlay(alignment: .bottom) {
-                MiniProgress()
-                    .padding(.horizontal, 28)
-                    .padding(.bottom, 4)
-            }
-            .contentShape(Capsule())
-            .glassEffect(.regular.interactive(), in: Capsule())
-            // Shaped as the capsule, so Now Playing shrinks into its rounded
-            // ends rather than a rectangle they replace on the last frame.
-            .matchedTransitionSource(id: tab, in: transition) { $0.clipShape(.rect(cornerRadius: Self.height / 2)) }
+            .contentShape(Rectangle())
             .onTapGesture { app.sheet = .nowPlaying }
             .accessibilityElement(children: .contain)
             .accessibilityAction(named: "Open Now Playing") { app.sheet = .nowPlaying }
-            .padding(.horizontal, Self.margin)
-            .padding(.bottom, Self.bottomGap)
         }
     }
 
     static func shown(on tab: AppTab, in app: AppModel) -> Bool {
         app.player.current != nil && !(tab == .search && app.isSearching)
+    }
+}
+
+/// A bare symbol, as the bar it sits in is already glass.
+private struct MiniPlayPause: View {
+    @Environment(AppModel.self) private var app
+    @Environment(\.theme) private var theme
+
+    var body: some View {
+        let player = app.player
+        if player.isBuffering {
+            Spinner(size: 24).frame(width: IconButton.minimum, height: IconButton.minimum)
+        } else {
+            IconButton(icon: player.isPlaying ? .pause : .play, iconSize: 24, colour: theme.text) { player.togglePlayPause() }
+                .accessibilityLabel(player.isPlaying ? "Pause" : "Play")
+        }
     }
 }
 
