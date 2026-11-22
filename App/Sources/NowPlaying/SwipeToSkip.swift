@@ -16,7 +16,7 @@ struct SwipeToSkip: ViewModifier {
 
     func body(content: Content) -> some View {
         content
-            // Resisting more the further it goes, so it never leaves the screen.
+            // Follows the finger at a little over half its pace, a hint of weight.
             .offset(x: offset)
             .rotationEffect(.degrees(reduceMotion ? 0 : Double(offset) / 40))
             .gesture(SidewaysPan(changed: { offset = $0 * 0.6 }, ended: ended))
