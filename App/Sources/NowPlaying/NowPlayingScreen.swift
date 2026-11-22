@@ -154,6 +154,7 @@ struct NowPlayingScreen: View {
     private func artworkPage(_ track: Track, open: @escaping (PanelTab) -> Void) -> some View {
         VStack(spacing: 0) {
             LargeArtwork(url: track.thumbnail)
+                .modifier(SwipeToSkip())
                 .accessibilityAction(named: "Up next") { open(.upNext) }
                 .padding(.vertical, 12)
                 .padding(.horizontal, Self.padding)
@@ -289,15 +290,19 @@ private struct LargeArtwork: View {
 }
 
 /// The artwork's colours where they sit in it, as a blurred copy would show
-/// them without the cost of blurring.
+/// them without the cost of blurring. While playing, the colours drift slowly,
+/// as Apple Music's do; still with Reduce Motion, or paused.
 private struct NowPlayingBackground: View {
     private static let edge = ArtworkPalette.meshEdge
     private static let points = (0..<edge * edge).map { cell in
         SIMD2(Float(cell % edge), Float(cell / edge)) / Float(edge - 1)
     }
+    /// How far an inner point wanders, as a share of the screen.
+    private static let drift: Float = 0.08
 
     @Environment(AppModel.self) private var app
     @Environment(\.theme) private var theme
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
 
     var body: some View {
         Group {
@@ -306,12 +311,31 @@ private struct NowPlayingBackground: View {
                 let colours = mesh.enumerated().map { cell, colour in
                     theme.tint(colour.darker(Double(cell / Self.edge) / Double(2 * (Self.edge - 1))))
                 }
-                MeshGradient(width: Self.edge, height: Self.edge, points: Self.points, colors: colours)
+                // A slow wander needs no more than 30 frames a second.
+                TimelineView(.animation(minimumInterval: 1.0 / 30, paused: reduceMotion || !app.player.isPlaying)) { timeline in
+                    MeshGradient(
+                        width: Self.edge, height: Self.edge,
+                        points: Self.drifted(at: timeline.date.timeIntervalSinceReferenceDate),
+                        colors: colours
+                    )
+                }
             } else {
                 theme.panel
             }
         }
         .animation(Theme.colour, value: app.artwork)
         .ignoresSafeArea()
+    }
+
+    /// The edge points stay on the edges, so the mesh always fills the screen; the inner ones circle slowly.
+    private static func drifted(at time: TimeInterval) -> [SIMD2<Float>] {
+        points.enumerated().map { cell, point in
+            let column = cell % edge
+            let row = cell / edge
+            guard column > 0, column < edge - 1, row > 0, row < edge - 1 else { return point }
+            let t = Float(time.truncatingRemainder(dividingBy: 3_600))
+            let phase = Float(cell) * 1.7
+            return point + SIMD2(sin(t * 0.21 + phase), cos(t * 0.17 + phase)) * drift
+        }
     }
 }

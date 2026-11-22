@@ -67,6 +67,7 @@ struct PageContent: View {
                 ToolbarItem(placement: .principal) {
                     StickyTitle(title: header.title, canPlay: canPlay) { app.perform(.play, on: page) }
                         .opacity(stickyTitleShown ? 1 : 0)
+                        .offset(y: stickyTitleShown ? 0 : 6)
                         .animation(Theme.normal, value: stickyTitleShown)
                 }
             }
@@ -141,6 +142,7 @@ struct PageContent: View {
                     SectionRows(section: page.sections[index], width: frame.width - 2 * Metrics.pagePadding)
                         // Its own songs are the first section's; any after are YouTube's suggestions.
                         .environment(\.ownPlaylist, index == 0 ? ownPlaylist : nil)
+                        .modifier(ArriveInTurn(index: index))
                 }
                 // The rest loads while the page is on screen (`PageScreen`).
                 if let more = page.more {
@@ -298,6 +300,30 @@ private struct Refresh: ViewModifier {
     func body(content: Content) -> some View {
         if let model {
             content.refreshable { await model.refresh(in: app) }
+        } else {
+            content
+        }
+    }
+}
+
+/// The first screenful of sections rises into place one after another as a page
+/// lands; the rest, and any scrolled back to, simply appear. Only fades with Reduce Motion.
+private struct ArriveInTurn: ViewModifier {
+    private static let staggered = 6
+
+    let index: Int
+
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
+    @State private var arrived = false
+
+    func body(content: Content) -> some View {
+        if index < Self.staggered {
+            content
+                .opacity(arrived ? 1 : 0)
+                .offset(y: arrived || reduceMotion ? 0 : 14)
+                .onAppear {
+                    withAnimation(Theme.normal.delay(Double(index) * 0.05)) { arrived = true }
+                }
         } else {
             content
         }

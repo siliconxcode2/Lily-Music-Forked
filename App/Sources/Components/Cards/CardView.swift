@@ -60,6 +60,12 @@ struct CarouselRow: View {
             LazyHStack(alignment: .top, spacing: Metrics.cardGap) {
                 ForEach(cards.indices, id: \.self) { index in
                     CardView(card: cards[index], width: Metrics.cardWidth)
+                        // Cards ease out a touch as they leave the row's edges.
+                        .scrollTransition(.interactive, axis: .horizontal) { card, phase in
+                            card
+                                .scaleEffect(phase.isIdentity ? 1 : 0.96)
+                                .opacity(phase.isIdentity ? 1 : 0.8)
+                        }
                 }
             }
             .scrollTargetLayout()

@@ -39,6 +39,8 @@ struct PageHeaderView: View {
                         ArtworkImage(url: header.thumbnail, edge: height, placeholder: false)
                             .frame(height: height)
                             .clipped()
+                            // A pull down stretches the banner to fill what it opens, as Apple Music's does.
+                            .modifier(Stretch(rest: 0, factor: 1))
                         LinearGradient(
                             stops: [.init(color: .clear, location: 0.35), .init(color: theme.bannerShade, location: 1)],
                             startPoint: .top,
@@ -60,6 +62,8 @@ struct PageHeaderView: View {
                             url: header.thumbnail, size: Self.artEdge(header, topInset: topInset), radius: Metrics.cardArtRadius,
                             shadow: (theme.shadowDeep, 20, 8)
                         )
+                            // Grows a little as the page is pulled down.
+                            .modifier(Stretch(rest: topInset + 16, factor: 0.5))
                             .frame(maxWidth: .infinity)
                     }
                     HeaderText(header: header, foreground: theme.text, secondary: theme.textSecondary)
@@ -199,6 +203,22 @@ private struct HeaderText: View {
         case ...18: 38
         case ...28: 32
         default: 28
+        }
+    }
+}
+
+/// Scales from the bottom as the scroll view is pulled down past its top, without
+/// redrawing the page: the position is read where the frame is drawn.
+private struct Stretch: ViewModifier {
+    /// Where the view sits in the scroll view at rest.
+    let rest: CGFloat
+    /// The share of the pull the view grows by.
+    let factor: CGFloat
+
+    func body(content: Content) -> some View {
+        content.visualEffect { content, proxy in
+            let pull = max(proxy.frame(in: .scrollView(axis: .vertical)).minY - rest, 0)
+            return content.scaleEffect(1 + pull * factor / max(proxy.size.height, 1), anchor: .bottom)
         }
     }
 }

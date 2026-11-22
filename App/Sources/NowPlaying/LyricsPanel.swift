@@ -143,12 +143,16 @@ private struct LyricLine: View {
     let lit: Bool
 
     @Environment(\.theme) private var theme
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
 
     var body: some View {
+        // The line being sung comes forward; the rest step back, softened, as Apple Music's do.
         Text(text)
             .font(.title2.weight(.bold))
             .foregroundStyle(theme.text)
-            .opacity(lit ? 1 : 0.5)
+            .opacity(lit ? 1 : 0.4)
+            .blur(radius: lit || reduceMotion ? 0 : 1)
+            .scaleEffect(lit || reduceMotion ? 1 : 0.96, anchor: .leading)
             .animation(Theme.normal, value: lit)
             .fixedSize(horizontal: false, vertical: true)
             .frame(maxWidth: .infinity, alignment: .leading)
