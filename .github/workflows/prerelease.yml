@@ -1,11 +1,17 @@
-# A test release for the phone: pushing a tag such as v1.1.0-beta.1 builds that commit's unsigned .ipa
-# and publishes it as a GitHub pre-release, for AltStore, SideStore or Feather to sign on install.
-# Full releases stay with release.yml, called by CI on main.
+# A test release for the phone: a tag such as v1.1.0-beta.1, pushed or given when run by hand, builds that
+# commit's unsigned .ipa and publishes it as a GitHub pre-release, for AltStore, SideStore or Feather to sign
+# on install. Run by hand, the release makes the tag itself. Full releases stay with release.yml, called by CI
+# on main.
 name: Pre-release
 
 on:
   push:
     tags: ['v*-beta*', 'v*-rc*']
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: The pre-release's tag, such as v1.1.0-beta.1
+        required: true
 
 permissions: {}
 
@@ -20,7 +26,16 @@ jobs:
     timeout-minutes: 30
     permissions:
       contents: write
+    env:
+      TAG: ${{ inputs.tag || github.ref_name }}
     steps:
+      - name: Check the tag
+        run: |
+          if [[ ! $TAG =~ ^v[0-9]+\.[0-9]+\.[0-9]+-(beta|rc)\.[0-9]+$ ]]; then
+            echo "::error::$TAG isn't a pre-release tag such as v1.1.0-beta.1."
+            exit 1
+          fi
+
       # The whole history, for the notes' commits since the last tag.
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
@@ -44,9 +59,9 @@ jobs:
       - name: Check the version
         run: |
           built=$(/usr/libexec/PlistBuddy -c "Print CFBundleShortVersionString" build/DerivedData/Build/Products/Release-iphoneos/Lily.app/Info.plist)
-          tagged=${GITHUB_REF_NAME#v}
+          tagged=${TAG#v}
           if [[ ${tagged%%-*} != "$built" ]]; then
-            echo "::error::The tag $GITHUB_REF_NAME is for ${tagged%%-*}, but the app was built as $built."
+            echo "::error::The tag $TAG is for ${tagged%%-*}, but the app was built as $built."
             exit 1
           fi
 
@@ -54,7 +69,7 @@ jobs:
         run: |
           previous=$(git describe --tags --abbrev=0 "$GITHUB_SHA^" 2>/dev/null || git rev-list --max-parents=0 HEAD)
           {
-            echo "A test build of Lily $GITHUB_REF_NAME. Unsigned: install it with AltStore, SideStore or Feather."
+            echo "A test build of Lily $TAG. Unsigned: install it with AltStore, SideStore or Feather."
             echo
             echo "## Changes"
             git log --reverse --no-merges --format='- %s' "$previous..$GITHUB_SHA"
@@ -65,5 +80,7 @@ jobs:
           GH_TOKEN: ${{ github.token }}
           REPO: ${{ github.repository }}
         run: |
-          gh release create "$GITHUB_REF_NAME" build/Lily.ipa --repo "$REPO" --verify-tag --prerelease \
-            --title "Lily ${GITHUB_REF_NAME#v}" --notes-file build/notes.md
+          # A pushed tag is checked to exist; run by hand, the release tags this commit.
+          verify=$([[ $GITHUB_EVENT_NAME == push ]] && echo --verify-tag || echo --target=$GITHUB_SHA)
+          gh release create "$TAG" build/Lily.ipa --repo "$REPO" $verify --prerelease \
+            --title "Lily ${TAG#v}" --notes-file build/notes.md
